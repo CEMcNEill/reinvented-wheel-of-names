@@ -37,10 +37,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 -   **Winner**: A modal will announce the winner with a confetti shower.
 
 ### Admin & Settings
--   **Themes**: Use the dropdown selector in the main UI to switch themes instantly.
 -   **Settings**: Click the **Gear Icon** in the top header to open the Admin Panel.
     -   **Data**: Export your data for backup or import a previous backup.
-    -   **Debug**: Enable verbose logging to see physics calculations in the console.
+    -   **Debug**: Enable verbose logging in the console.
 
 ## Keyboard Shortcuts
 
