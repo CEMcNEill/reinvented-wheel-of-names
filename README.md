@@ -9,7 +9,6 @@ A modern, feature-rich, and aesthetically pleasing random name picker applicatio
 -   **🎯 Physics-Based Wheel**: A satisfying, responsive wheel with realistic physics and confetti celebrations.
 -   **👥 Team Management**: Create, edit, and persist multiple teams with member lists. Data is saved locally.
 -   **📝 Ad-Hoc Lists**: A "Quick List" mode for temporary, on-the-fly name picking.
-- 
 -   **⚙️ Admin Panel**:
     -   **Backup & Restore**: Export your teams and settings to JSON and restore them later.
     -   **Debug Tools**: Verbose logging for physics debugging.
