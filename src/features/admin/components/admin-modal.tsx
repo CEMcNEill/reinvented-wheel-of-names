@@ -56,7 +56,7 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
                             Backup & Restore
                         </h3>
                         <div className="flex flex-col gap-4">
-                            <div className="p-4 border rounded-lg bg-slate-50 space-y-2">
+                            <div className="p-4 border rounded-lg bg-muted/50 space-y-2">
                                 <h4 className="font-medium">Export Data</h4>
                                 <p className="text-sm text-muted-foreground">Download a JSON backup of all teams, members, and settings.</p>
                                 <Button onClick={handleExport} variant="outline" className="w-full sm:w-auto">
@@ -65,7 +65,7 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
                                 </Button>
                             </div>
 
-                            <div className="p-4 border rounded-lg bg-slate-50 space-y-2">
+                            <div className="p-4 border rounded-lg bg-muted/50 space-y-2">
                                 <h4 className="font-medium">Import Data</h4>
                                 <p className="text-sm text-muted-foreground">Restore from a JSON backup file. This will overwrite current data.</p>
                                 <div className="flex gap-2">
@@ -92,7 +92,7 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
                             Debug Tools
                         </h3>
 
-                        <div className="p-4 border rounded-lg bg-slate-50 flex items-center justify-between">
+                        <div className="p-4 border rounded-lg bg-muted/50 flex items-center justify-between">
                             <div className="space-y-0.5">
                                 <h4 className="font-medium">Verbose Logging</h4>
                                 <p className="text-sm text-muted-foreground">Log detailed wheel physics and state changes to console.</p>

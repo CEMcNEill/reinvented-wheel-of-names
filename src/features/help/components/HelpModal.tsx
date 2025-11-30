@@ -15,7 +15,7 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
                 onClose={() => onOpenChange(false)}
                 className={cn('max-w-2xl')}
             >
-                <div className="space-y-4 text-sm text-gray-800">
+                <div className="space-y-4 text-sm text-foreground">
                     <p>
                         This application lets you spin a wheel of names. You can manage teams and add ad‑hoc names.
                     </p>

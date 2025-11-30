@@ -56,7 +56,7 @@ export function DialogContent({ title, children, onClose, className }: DialogCon
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className={cn(
-                "relative w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden",
+                "relative w-full max-w-lg bg-background rounded-xl shadow-2xl overflow-hidden border border-border",
                 className
             )}
             onClick={(e) => e.stopPropagation()}

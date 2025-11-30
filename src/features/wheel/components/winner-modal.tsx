@@ -68,13 +68,13 @@ export function WinnerModal() {
         <Dialog open={!!winner} onOpenChange={(open) => !open && handleClose()}>
             <DialogContent className="sm:max-w-md text-center p-12">
                 <div className="flex flex-col items-center gap-6">
-                    <div className="p-4 bg-yellow-100 rounded-full text-yellow-600 animate-bounce">
+                    <div className="p-4 bg-primary/10 rounded-full text-primary animate-bounce">
                         <Trophy size={48} />
                     </div>
 
                     <div className="space-y-2">
-                        <h2 className="text-2xl font-semibold text-slate-500">We have a winner!</h2>
-                        <p className="text-4xl font-heading font-bold text-slate-900 break-words">
+                        <h2 className="text-2xl font-semibold text-muted-foreground">We have a winner!</h2>
+                        <p className="text-4xl font-heading font-bold text-foreground break-words">
                             {winner}
                         </p>
                     </div>
