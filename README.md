@@ -2,7 +2,7 @@
 
 A modern, feature-rich, and aesthetically pleasing random name picker application built with Next.js, Tailwind CSS, and Framer Motion.
 
-![Wheel of Names Screenshot](public/screenshot.png)
+![Wheel of Names Screenshot](public/Screenshot.png)
 
 ## Features
 
