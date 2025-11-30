@@ -29,7 +29,7 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
                     <p className="mt-2">
                         For more detailed documentation, visit the{' '}
                         <a
-                            href="https://github.com/your-repo/reinvented-wheel-of-names"
+                            href="https://github.com/CEMcNEill/reinvented-wheel-of-names"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 underline"
