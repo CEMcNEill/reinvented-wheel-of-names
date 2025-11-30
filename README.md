@@ -9,14 +9,7 @@ A modern, feature-rich, and aesthetically pleasing random name picker applicatio
 -   **🎯 Physics-Based Wheel**: A satisfying, responsive wheel with realistic physics and confetti celebrations.
 -   **👥 Team Management**: Create, edit, and persist multiple teams with member lists. Data is saved locally.
 -   **📝 Ad-Hoc Lists**: A "Quick List" mode for temporary, on-the-fly name picking.
--   **🎨 Rich Theming**: Choose from 7 unique visual themes:
-    -   **Standard**: Clean and professional.
-    -   **Death**: Dark, edgy, and metal.
-    -   **Puppy**: Cute, playful, and bright.
-    -   **Art Deco**: Elegant, gold-and-black 1920s style.
-    -   **Art Nouveau**: Organic, flowery, and ornamental.
-    -   **Grunge**: Raw, textured, and 90s inspired.
-    -   **Vaporwave**: Retro-futuristic aesthetic.
+- 
 -   **⚙️ Admin Panel**:
     -   **Backup & Restore**: Export your teams and settings to JSON and restore them later.
     -   **Debug Tools**: Verbose logging for physics debugging.
