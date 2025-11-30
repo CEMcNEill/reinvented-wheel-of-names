@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Reinvented Wheel of Names
+
+A modern, feature-rich, and aesthetically pleasing random name picker application built with Next.js, Tailwind CSS, and Framer Motion.
+
+![Wheel of Names Screenshot](public/screenshot.png)
+
+## Features
+
+-   **🎯 Physics-Based Wheel**: A satisfying, responsive wheel with realistic physics and confetti celebrations.
+-   **👥 Team Management**: Create, edit, and persist multiple teams with member lists. Data is saved locally.
+-   **📝 Ad-Hoc Lists**: A "Quick List" mode for temporary, on-the-fly name picking.
+-   **🎨 Rich Theming**: Choose from 7 unique visual themes:
+    -   **Standard**: Clean and professional.
+    -   **Death**: Dark, edgy, and metal.
+    -   **Puppy**: Cute, playful, and bright.
+    -   **Art Deco**: Elegant, gold-and-black 1920s style.
+    -   **Art Nouveau**: Organic, flowery, and ornamental.
+    -   **Grunge**: Raw, textured, and 90s inspired.
+    -   **Vaporwave**: Retro-futuristic aesthetic.
+-   **⚙️ Admin Panel**:
+    -   **Backup & Restore**: Export your teams and settings to JSON and restore them later.
+    -   **Debug Tools**: Verbose logging for physics debugging.
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies and run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage Guide
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Managing Teams
+1.  **Create a Team**: Click the **"New Team"** button or press `N`.
+2.  **Add Members**: Type a name and press `Enter`. Press `Enter` on an empty line to save.
+3.  **Edit/Delete**: Use the icons on the team cards to manage your lists.
+4.  **Drag & Drop**: Reorder teams and the Quick List by dragging them.
 
-## Learn More
+### Spinning the Wheel
+-   **Spin**: Click the **"SPIN"** button in the center of the wheel or press `Enter`.
+-   **Winner**: A modal will announce the winner with a confetti shower.
 
-To learn more about Next.js, take a look at the following resources:
+### Admin & Settings
+-   **Themes**: Use the dropdown selector in the main UI to switch themes instantly.
+-   **Settings**: Click the **Gear Icon** in the top header to open the Admin Panel.
+    -   **Data**: Export your data for backup or import a previous backup.
+    -   **Debug**: Enable verbose logging to see physics calculations in the console.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Keyboard Shortcuts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Key | Action |
+| :--- | :--- |
+| **`N`** | Create a **N**ew Team |
+| **`Enter`** | **Spin** the wheel (when not typing) |
+| **`↑` / `↓`** | Navigate between teams |
+| **`?`** or **`H`** | Open **H**elp & Shortcuts |
+| **`ESC`** | Close any open modal |
 
-## Deploy on Vercel
+## Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+-   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+-   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+-   **Animations**: [Framer Motion](https://www.framer.com/motion/)
+-   **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+-   **Persistence**: [Dexie.js](https://dexie.org/) (IndexedDB)
+-   **Drag & Drop**: [dnd-kit](https://dndkit.com/)

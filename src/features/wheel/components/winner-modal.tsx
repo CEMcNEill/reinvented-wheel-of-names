@@ -1,0 +1,101 @@
+'use client';
+
+import { useEffect, useCallback } from 'react';
+import confetti from 'canvas-confetti';
+import { useAppStore } from '@/lib/store';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Trophy } from 'lucide-react';
+
+export function WinnerModal() {
+    const { winner, setWinner, theme } = useAppStore();
+
+    const handleClose = useCallback(() => {
+        setWinner(null);
+    }, [setWinner]);
+
+    useEffect(() => {
+        if (winner) {
+            // Trigger confetti based on theme
+            const colors = theme === 'death'
+                ? ['#ff0000', '#000000', '#550000']
+                : theme === 'puppy'
+                    ? ['#ff69b4', '#ffb6c1', '#ffffff']
+                    : theme === 'deco'
+                        ? ['#e5c100', '#000000', '#ffffff']
+                        : theme === 'nouveau'
+                            ? ['#4a5d23', '#d4a373', '#f4f1ea']
+                            : theme === 'grunge'
+                                ? ['#000000', '#ffffff', '#ff0000']
+                                : theme === 'vaporwave'
+                                    ? ['#008080', '#ff00ff', '#800080']
+                                    : ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
+
+            const duration = 3000;
+            const end = Date.now() + duration;
+
+            const frame = () => {
+                // Oscillate between 25 and 60 degrees
+                const now = Date.now();
+                const angle = 42.5 + 17.5 * Math.sin(now * 0.005);
+
+                confetti({
+                    particleCount: 5,
+                    angle: angle,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 180 - angle,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            };
+
+            frame();
+        }
+    }, [winner, theme]);
+
+    // Keyboard listener to close modal on Enter
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && winner) {
+                e.preventDefault();
+                handleClose();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [winner, handleClose]);
+
+    return (
+        <Dialog open={!!winner} onOpenChange={(open) => !open && handleClose()}>
+            <DialogContent className="sm:max-w-md text-center p-12">
+                <div className="flex flex-col items-center gap-6">
+                    <div className="p-4 bg-yellow-100 rounded-full text-yellow-600 animate-bounce">
+                        <Trophy size={48} />
+                    </div>
+
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-semibold text-slate-500">We have a winner!</h2>
+                        <p className="text-4xl font-heading font-bold text-slate-900 break-words">
+                            {winner}
+                        </p>
+                    </div>
+
+                    <Button size="lg" onClick={handleClose} className="mt-4 w-full">
+                        Awesome!
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
