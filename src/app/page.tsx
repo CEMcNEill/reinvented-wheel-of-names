@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { HelpCircle, Settings } from 'lucide-react';
 
 export default function Home() {
-  const { theme, helpOpen, setHelpOpen, adminOpen, setAdminOpen } = useAppStore();
+  const { helpOpen, setHelpOpen, adminOpen, setAdminOpen } = useAppStore();
 
   // Open help modal via keyboard shortcuts
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handler);
   }, [setHelpOpen]);
   return (
-    <main className="min-h-screen p-8 transition-colors duration-300" data-theme={theme}>
+    <main className="min-h-screen p-8 transition-colors duration-300">
       <WinnerModal />
       <div className="max-w-6xl mx-auto space-y-12">
 

@@ -17,7 +17,7 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
             >
                 <div className="space-y-4 text-sm text-gray-800">
                     <p>
-                        This application lets you spin a wheel of names. You can manage teams, add ad‑hoc names, and customise the theme.
+                        This application lets you spin a wheel of names. You can manage teams and add ad‑hoc names.
                     </p>
                     <h3 className="text-lg font-bold">Keyboard Shortcuts</h3>
                     <ul className="list-disc list-inside space-y-2">

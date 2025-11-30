@@ -1,68 +1,11 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: var(--font-inter);
-  --font-heading: var(--font-outfit);
-}
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #2563eb; /* Blue-600 */
+  --primary: #2563eb;
+  /* Blue-600 */
   --radius: 0.75rem;
-}
-
-[data-theme='death'] {
-  --background: #1a0505;
-  --foreground: #ffdddd;
-  --primary: #ef4444; /* Red-500 */
-  --radius: 1rem;
-}
-
-[data-theme='puppy'] {
-  --background: #fff0f5;
-  --foreground: #5a3e5a;
-  --primary: #ec4899; /* Pink-500 */
-  --radius: 1.5rem;
-}
-
-/* Art Deco: Gold & Black, Geometric */
-[data-theme='deco'] {
-  --background: #121212;
-  --foreground: #e5c100;
-  --primary: #e5c100;
-  --radius: 2px;
-  --font-heading: var(--font-limelight);
-  --font-sans: var(--font-inter); /* Keep readable body */
-}
-
-/* Art Nouveau: Organic, Flowing, Nature tones */
-[data-theme='nouveau'] {
-  --background: #f4f1ea; /* Cream */
-  --foreground: #4a5d23; /* Olive Green */
-  --primary: #d4a373; /* Muted Earthy Orange */
-  --radius: 24px;
-  --font-heading: var(--font-cinzel);
-}
-
-/* Grunge: Chaotic, High Contrast, David Carson style */
-[data-theme='grunge'] {
-  --background: #ffffff;
-  --foreground: #000000;
-  --primary: #000000;
-  --radius: 0px;
-  --font-heading: var(--font-anton);
-  /* We might want to invert some things or add borders later */
-}
-
-/* Vaporwave: Retro, Neon, Windows 95 */
-[data-theme='vaporwave'] {
-  --background: #008080; /* Windows 95 Teal */
-  --foreground: #000000;
-  --primary: #c0c0c0; /* Silver/Grey */
-  --radius: 0px;
-  --font-heading: var(--font-vt323);
-  --font-sans: var(--font-vt323); /* Go full retro terminal */
 }
 
 @media (prefers-color-scheme: dark) {

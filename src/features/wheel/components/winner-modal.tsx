@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Trophy } from 'lucide-react';
 
 export function WinnerModal() {
-    const { winner, setWinner, theme } = useAppStore();
+    const { winner, setWinner } = useAppStore();
 
     const handleClose = useCallback(() => {
         setWinner(null);
@@ -16,20 +16,8 @@ export function WinnerModal() {
 
     useEffect(() => {
         if (winner) {
-            // Trigger confetti based on theme
-            const colors = theme === 'death'
-                ? ['#ff0000', '#000000', '#550000']
-                : theme === 'puppy'
-                    ? ['#ff69b4', '#ffb6c1', '#ffffff']
-                    : theme === 'deco'
-                        ? ['#e5c100', '#000000', '#ffffff']
-                        : theme === 'nouveau'
-                            ? ['#4a5d23', '#d4a373', '#f4f1ea']
-                            : theme === 'grunge'
-                                ? ['#000000', '#ffffff', '#ff0000']
-                                : theme === 'vaporwave'
-                                    ? ['#008080', '#ff00ff', '#800080']
-                                    : ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
+            // Default confetti colors
+            const colors = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
 
             const duration = 3000;
             const end = Date.now() + duration;
@@ -61,7 +49,7 @@ export function WinnerModal() {
 
             frame();
         }
-    }, [winner, theme]);
+    }, [winner]);
 
     // Keyboard listener to close modal on Enter
     useEffect(() => {

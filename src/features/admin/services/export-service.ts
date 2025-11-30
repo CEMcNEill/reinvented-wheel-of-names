@@ -7,7 +7,6 @@ export interface BackupData {
     timestamp: string;
     teams: Team[];
     settings: {
-        theme: string;
         adHocNames: string[];
         adHocOrder: number;
         excludedMemberIds: string[];
@@ -23,7 +22,6 @@ export const exportData = async (): Promise<string> => {
         timestamp: new Date().toISOString(),
         teams,
         settings: {
-            theme: state.theme,
             adHocNames: state.adHocNames,
             adHocOrder: state.adHocOrder,
             excludedMemberIds: state.excludedMemberIds

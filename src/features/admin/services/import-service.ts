@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { useAppStore, Theme } from "@/lib/store";
+import { useAppStore } from "@/lib/store";
 
 // Schema for validation
 const backupSchema = z.object({
@@ -19,7 +19,6 @@ const backupSchema = z.object({
         updatedAt: z.string().optional()
     })),
     settings: z.object({
-        theme: z.string(),
         adHocNames: z.array(z.string()),
         adHocOrder: z.number(),
         excludedMemberIds: z.array(z.string())
@@ -47,7 +46,6 @@ export const importData = async (jsonString: string) => {
 
         // Restore Settings
         const store = useAppStore.getState();
-        store.setTheme(validated.settings.theme as Theme);
         store.setAdHocNames(validated.settings.adHocNames);
         store.setAdHocOrder(validated.settings.adHocOrder);
 

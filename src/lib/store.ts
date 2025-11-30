@@ -1,17 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type Theme = 'standard' | 'death' | 'puppy' | 'deco' | 'nouveau' | 'grunge' | 'vaporwave';
-
 interface AppState {
     // UI Modals
     helpOpen: boolean;
     setHelpOpen: (open: boolean) => void;
     adminOpen: boolean;
     setAdminOpen: (open: boolean) => void;
-
-    theme: Theme;
-    setTheme: (theme: Theme) => void;
 
     // Selection Mode
     mode: 'team' | 'adhoc';
@@ -51,9 +46,6 @@ interface AppState {
 export const useAppStore = create<AppState>()(
     persist(
         (set) => ({
-            theme: 'standard',
-            setTheme: (theme) => set({ theme }),
-
             // UI Modals
             helpOpen: false,
             setHelpOpen: (open) => set({ helpOpen: open }),
@@ -98,7 +90,6 @@ export const useAppStore = create<AppState>()(
         {
             name: 'wheel-of-names-storage',
             partialize: (state) => ({
-                theme: state.theme,
                 mode: state.mode,
                 activeTeamId: state.activeTeamId,
                 adHocNames: state.adHocNames,
