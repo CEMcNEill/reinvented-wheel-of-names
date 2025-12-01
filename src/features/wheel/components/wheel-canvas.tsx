@@ -7,8 +7,12 @@ import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 
 const COLORS = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
-    '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'
+    'var(--palette-primary-500)',
+    'var(--palette-complementary-500)',
+    'var(--palette-analogous-1-500)',
+    'var(--palette-analogous-2-500)',
+    'var(--palette-triadic-1-500)',
+    'var(--palette-triadic-2-500)',
 ];
 
 export function WheelCanvas() {
@@ -93,7 +97,7 @@ export function WheelCanvas() {
 
     if (segments.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-full text-slate-400">
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                 <p className="text-lg">Add names to spin!</p>
             </div>
         );
@@ -103,11 +107,11 @@ export function WheelCanvas() {
         <div className="flex flex-col items-center justify-center gap-8 py-8">
             <div className="relative w-full max-w-[400px] aspect-square">
                 {/* Pointer - positioned at right (3 o'clock), pointing left (inward) */}
-                <div className="absolute top-1/2 -right-4 w-0 h-0 border-y-[15px] border-y-transparent border-r-[30px] border-r-slate-800 -translate-y-1/2 z-10 drop-shadow-lg" />
+                <div className="absolute top-1/2 -right-4 w-0 h-0 border-y-[15px] border-y-transparent border-r-[30px] border-r-foreground -translate-y-1/2 z-10 drop-shadow-lg" />
 
                 {/* Wheel */}
                 <motion.div
-                    className="w-full h-full rounded-full border-4 border-slate-200 overflow-hidden relative shadow-xl"
+                    className="w-full h-full rounded-full border-4 border-border overflow-hidden relative shadow-xl"
                     animate={controls}
                     style={{ rotate: rotation }}
                 >
@@ -131,12 +135,12 @@ export function WheelCanvas() {
 
                             return (
                                 <g key={segment.id}>
-                                    <path d={pathData} fill={COLORS[i % COLORS.length]} stroke="white" strokeWidth="0.5" />
+                                    <path d={pathData} fill={COLORS[i % COLORS.length]} stroke="var(--background)" strokeWidth="0.5" />
                                     {/* Text Label - simplified positioning */}
                                     <text
                                         x="50"
                                         y="50"
-                                        fill="white"
+                                        fill="var(--primary-foreground)"
                                         fontSize="4"
                                         fontWeight="bold"
                                         textAnchor="end"

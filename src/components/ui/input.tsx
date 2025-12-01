@@ -12,13 +12,13 @@ const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLI
                 type={type}
                 className={cn(
                     // Base styles:
-                    "flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white",
+                    "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
                     // File input styles:
                     "file:border-0 file:bg-transparent file:text-sm file:font-medium",
                     // Placeholder styles:
-                    "placeholder:text-slate-500",
+                    "placeholder:text-muted-foreground",
                     // Focus styles (very important for accessibility):
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     // Disabled state:
                     "disabled:cursor-not-allowed disabled:opacity-50",
                     className

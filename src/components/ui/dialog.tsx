@@ -27,7 +27,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
     return (
         <AnimatePresence>
             {open && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -62,7 +62,7 @@ export function DialogContent({ title, children, onClose, className }: DialogCon
             onClick={(e) => e.stopPropagation()}
         >
             {(title || onClose) && (
-                <div className="flex items-center justify-between p-6 border-b border-slate-100">
+                <div className="flex items-center justify-between p-6 border-b border-border">
                     {title && <h3 className="text-xl font-bold font-heading">{title}</h3>}
                     {onClose && (
                         <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 rounded-full">

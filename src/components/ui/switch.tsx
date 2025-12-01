@@ -17,7 +17,7 @@ export function Switch({ checked, onCheckedChange, className }: SwitchProps) {
             aria-checked={checked}
             onClick={() => onCheckedChange(!checked)}
             className={cn(
-                "w-11 h-6 bg-slate-200 rounded-full p-1 transition-colors cursor-pointer",
+                "w-11 h-6 bg-input rounded-full p-1 transition-colors cursor-pointer",
                 checked && "bg-primary",
                 className
             )}
