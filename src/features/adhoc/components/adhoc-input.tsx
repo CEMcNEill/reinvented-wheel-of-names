@@ -91,7 +91,7 @@ export function AdHocInput({ onNavigateUp, onNavigateDown }: AdHocInputProps) {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                     onClick={(e) => { e.stopPropagation(); handleClear(); }}
                     title="Clear List"
                 >
@@ -105,11 +105,13 @@ export function AdHocInput({ onNavigateUp, onNavigateDown }: AdHocInputProps) {
                 <Input
                     ref={inputRef}
                     id="adhoc-input"
+                    type="text"
+                    autoComplete="off"
                     placeholder="Enter names separated by commas, enter to spin"
                     value={text}
                     onChange={handleTextChange}
                     onKeyDown={handleKeyDown}
-                    className="bg-slate-50 border-slate-200 focus-visible:ring-primary text-base p-3 h-auto min-h-[44px]"
+                    className="bg-card border-input focus-visible:ring-ring text-base p-3 h-auto min-h-[44px] text-foreground"
                 />
             </CardContent>
         </Card>
