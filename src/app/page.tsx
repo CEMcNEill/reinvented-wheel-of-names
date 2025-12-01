@@ -48,7 +48,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
           {/* Left Column: Wheel */}
-          <div className="lg:col-span-7 bg-slate-50/50 rounded-[var(--radius)] p-8 flex items-center justify-center min-h-[400px] border-2 border-dashed border-slate-200">
+          <div className="lg:col-span-7 bg-muted/30 rounded-[var(--radius)] p-8 flex items-center justify-center min-h-[400px] border-2 border-dashed border-border">
             <WheelCanvas />
           </div>
 
