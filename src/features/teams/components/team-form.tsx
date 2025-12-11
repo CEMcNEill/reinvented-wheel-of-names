@@ -4,7 +4,9 @@ import { createTeamSchema, type CreateTeamInput, type Team } from "../schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus, Settings } from "lucide-react";
+import { Trash2, Plus, Settings, Upload } from "lucide-react";
+import { importData } from "../../admin/services/import-service";
+import { useRef } from "react";
 
 interface TeamFormProps {
     initialData?: Team;
@@ -67,6 +69,32 @@ export function TeamForm({ initialData, onSubmit, onCancel, onOpenSettings }: Te
                 // Wait for render then focus new input
                 setTimeout(() => setFocus(`members.${index + 1}.name`), 0);
             }
+        }
+    };
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const content = event.target?.result as string;
+            if (content) {
+                try {
+                    await importData(content);
+                    alert("Data imported successfully!");
+                    onCancel(); // Close dialog after successful import
+                } catch {
+                    alert("Failed to import data. Please check the file format.");
+                }
+            }
+        };
+        reader.readAsText(file);
+        // Reset input
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
@@ -155,13 +183,36 @@ export function TeamForm({ initialData, onSubmit, onCancel, onOpenSettings }: Te
                 </div>
             )}
 
-            <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button type="button" variant="ghost" onClick={onCancel}>
-                    Cancel
-                </Button>
-                <Button type="submit">
-                    {initialData ? 'Update Team' : 'Create Team'}
-                </Button>
+            <div className={`flex ${!initialData ? 'justify-between' : 'justify-end gap-2'} items-center pt-4 border-t`}>
+                {!initialData && (
+                    <div className="flex items-center">
+                        <Input
+                            type="file"
+                            accept=".json"
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={handleImport}
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => fileInputRef.current?.click()}
+                            title="Import Teams"
+                        >
+                            <Upload className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                    </div>
+                )}
+
+                <div className="flex gap-2">
+                    <Button type="button" variant="ghost" onClick={onCancel}>
+                        Cancel
+                    </Button>
+                    <Button type="submit">
+                        {initialData ? 'Update Team' : 'Create Team'}
+                    </Button>
+                </div>
             </div>
         </form>
     );

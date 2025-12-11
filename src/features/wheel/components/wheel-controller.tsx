@@ -4,6 +4,7 @@ import { useAppStore } from '@/lib/store';
 import { useTeams, useTeamActions } from '@/features/teams/hooks';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react'; // For analytics
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { TeamForm } from '@/features/teams/components/team-form';
@@ -28,6 +29,7 @@ import { SortableTeamItem } from './sortable-team-item';
 import { SortableAdHocItem } from './sortable-adhoc-item';
 
 export function WheelController() {
+    const posthog = usePostHog();
     const { teams, isLoading } = useTeams();
     const { deleteTeam, createTeam, updateTeam } = useTeamActions();
     const { activeTeamId, setActiveTeamId, mode, setMode, adHocOrder, setAdHocOrder } = useAppStore();
@@ -154,6 +156,9 @@ export function WheelController() {
     };
 
     const handleSubmit = async (data: CreateTeamInput) => {
+        // Analytics: Track team interaction
+        const distinctId = posthog.get_distinct_id();
+
         if (editingTeam) {
             const membersWithIds = data.members.map(m => ({
                 id: uuidv4(),
@@ -165,10 +170,30 @@ export function WheelController() {
                 name: data.name,
                 members: membersWithIds
             });
+            posthog.capture('team_updated', {
+                team_id: editingTeam.id,
+                team_name: data.name,
+                member_count: data.members.length
+            });
         } else {
             const newTeam = await createTeam(data);
             setActiveTeamId(newTeam.id);
             setMode('team');
+
+            // Link Team to Anonymous User
+            // We use local state to determine if this is the first team
+            const isFirstTeam = teams.length === 0;
+
+            posthog.capture('team_created', {
+                team_id: newTeam.id,
+                team_name: newTeam.name,
+                member_count: newTeam.members.length,
+                $set: {
+                    last_team_created: newTeam.name,
+                    teams_created: teams.length + 1,
+                    ...(isFirstTeam ? { first_team_created_at: new Date().toISOString() } : {})
+                }
+            });
         }
         setIsDialogOpen(false);
     };

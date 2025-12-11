@@ -10,6 +10,22 @@ export function DeathModeToggle() {
     const [isDeathMode, setIsDeathMode] = useState(false);
 
     useEffect(() => {
+        // Check cookie for persistence on mount
+        const cookies = document.cookie.split('; ');
+        const deathModeCookie = cookies.find(row => row.startsWith('death-mode='));
+        if (deathModeCookie) {
+            const isEnabled = deathModeCookie.split('=')[1] === 'true';
+            if (isEnabled) {
+                posthog.featureFlags.overrideFeatureFlags({
+                    flags: {
+                        'death-mode': true
+                    }
+                });
+            }
+        }
+    }, [posthog]);
+
+    useEffect(() => {
         // Sync state with PostHog flag
         const checkFlag = () => {
             const flagValue = posthog.isFeatureEnabled('death-mode');
@@ -33,6 +49,9 @@ export function DeathModeToggle() {
     const toggleDeathMode = () => {
         const newValue = !isDeathMode;
         setIsDeathMode(newValue);
+
+        // Save to cookie for persistence (1 year)
+        document.cookie = `death-mode=${newValue}; path=/; max-age=31536000`;
 
         // Override the feature flag locally
         posthog.featureFlags.overrideFeatureFlags({
