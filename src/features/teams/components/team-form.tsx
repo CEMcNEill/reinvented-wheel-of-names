@@ -4,15 +4,16 @@ import { createTeamSchema, type CreateTeamInput, type Team } from "../schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, Settings } from "lucide-react";
 
 interface TeamFormProps {
     initialData?: Team;
     onSubmit: (data: CreateTeamInput) => void;
     onCancel: () => void;
+    onOpenSettings?: () => void;
 }
 
-export function TeamForm({ initialData, onSubmit, onCancel }: TeamFormProps) {
+export function TeamForm({ initialData, onSubmit, onCancel, onOpenSettings }: TeamFormProps) {
     const {
         register,
         control,
@@ -137,6 +138,22 @@ export function TeamForm({ initialData, onSubmit, onCancel }: TeamFormProps) {
                     <p className="text-sm text-red-500">{errors.members.message}</p>
                 )}
             </div>
+
+            {!initialData && onOpenSettings && (
+                <div className="flex items-center justify-between text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
+                    <span>You can also import teams from settings.</span>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={onOpenSettings}
+                        title="Open Settings"
+                    >
+                        <Settings className="h-4 w-4" />
+                    </Button>
+                </div>
+            )}
 
             <div className="flex justify-end gap-2 pt-4 border-t">
                 <Button type="button" variant="ghost" onClick={onCancel}>

@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 export function TeamList() {
     const { teams, isLoading } = useTeams();
     const { deleteTeam, createTeam, updateTeam } = useTeamActions();
-    const { activeTeamId, setActiveTeamId, setMode } = useAppStore();
+    const { activeTeamId, setActiveTeamId, setMode, setAdminOpen } = useAppStore();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingTeam, setEditingTeam] = useState<Team | null>(null);
@@ -106,6 +106,10 @@ export function TeamList() {
                         initialData={editingTeam || undefined}
                         onSubmit={handleSubmit}
                         onCancel={() => setIsDialogOpen(false)}
+                        onOpenSettings={() => {
+                            setIsDialogOpen(false);
+                            setAdminOpen(true);
+                        }}
                     />
                 </DialogContent>
             </Dialog>

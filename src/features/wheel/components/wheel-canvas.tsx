@@ -5,6 +5,8 @@ import { motion, useAnimation } from 'framer-motion';
 import { useWheelSegments } from '../hooks';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
+import { usePostHog } from 'posthog-js/react';
+import { Flame } from 'lucide-react';
 
 const COLORS = [
     'var(--palette-primary-500)',
@@ -15,9 +17,20 @@ const COLORS = [
     'var(--palette-triadic-2-500)',
 ];
 
+const DEATH_COLORS = [
+    '#dc2626', // Red 600
+    '#b91c1c', // Red 700
+    '#991b1b', // Red 800
+    '#7f1d1d', // Red 900
+    '#450a0a', // Red 950
+    '#000000', // Black
+];
+
 export function WheelCanvas() {
     const { segments } = useWheelSegments();
     const { isSpinning, setIsSpinning, winner, setWinner, spinRequest, resetSpinRequest, helpOpen } = useAppStore();
+    const posthog = usePostHog();
+    const isDeathMode = posthog.isFeatureEnabled('death-mode');
     const controls = useAnimation();
     const [rotation, setRotation] = useState(0);
 
@@ -135,7 +148,7 @@ export function WheelCanvas() {
 
                             return (
                                 <g key={segment.id}>
-                                    <path d={pathData} fill={COLORS[i % COLORS.length]} stroke="var(--background)" strokeWidth="0.5" />
+                                    <path d={pathData} fill={isDeathMode ? DEATH_COLORS[i % DEATH_COLORS.length] : COLORS[i % COLORS.length]} stroke="var(--background)" strokeWidth="0.5" />
                                     {/* Text Label - simplified positioning */}
                                     <text
                                         x="50"
@@ -158,11 +171,15 @@ export function WheelCanvas() {
 
             <Button
                 size="lg"
-                className="text-xl px-12 py-8 rounded-full shadow-lg hover:scale-105 transition-transform"
+                className={`text-xl px-12 py-8 rounded-full shadow-lg hover:scale-105 transition-transform ${isDeathMode ? 'bg-red-900 hover:bg-red-800 text-white border-2 border-red-500' : ''}`}
                 onClick={spinWheel}
                 disabled={isSpinning || segments.length < 2 || helpOpen}
             >
-                {isSpinning ? 'Spinning...' : 'SPIN!'}
+                {isSpinning ? 'Spinning...' : isDeathMode ? (
+                    <span className="flex items-center gap-2">
+                        SACRIFICE <Flame className="h-6 w-6 animate-pulse" />
+                    </span>
+                ) : 'SPIN!'}
             </Button>
         </div>
     );
