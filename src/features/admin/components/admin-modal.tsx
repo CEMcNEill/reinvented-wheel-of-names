@@ -1,12 +1,13 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useAppStore } from "@/lib/store";
-import { Database, Bug, Download, Upload } from "lucide-react";
+import { Database, Bug, Download, Upload, Globe } from "lucide-react";
 import { downloadBackup } from "../services/export-service";
 import { importData } from "../services/import-service";
+import { usePostHog } from 'posthog-js/react';
 
 interface AdminModalProps {
     open: boolean;
@@ -16,6 +17,34 @@ interface AdminModalProps {
 export function AdminModal({ open, onOpenChange }: AdminModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { verboseLogging, setVerboseLogging } = useAppStore();
+    const posthog = usePostHog();
+    const [remoteTeamsEnabled, setRemoteTeamsEnabled] = useState(false);
+
+
+
+    // Sync state with PostHog flag
+    useEffect(() => {
+        const checkFlag = () => {
+            setRemoteTeamsEnabled(!!posthog.isFeatureEnabled('enable_remote_teams'));
+        };
+        checkFlag();
+        const unregister = posthog.onFeatureFlags(checkFlag);
+        return () => unregister();
+    }, [posthog]);
+
+    const handleToggleRemoteTeams = (enabled: boolean) => {
+        setRemoteTeamsEnabled(enabled);
+
+        // Save to cookie (1 year)
+        document.cookie = `enable_remote_teams=${enabled}; path=/; max-age=31536000`;
+
+        // Override PostHog flag locally
+        posthog.featureFlags.overrideFeatureFlags({
+            flags: {
+                'enable_remote_teams': enabled
+            }
+        });
+    };
 
     const handleExport = async () => {
         await downloadBackup();
@@ -82,6 +111,21 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
                                     </Button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Features Section */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-medium flex items-center gap-2">
+                            <Globe className="h-5 w-5" />
+                            Experimental Features
+                        </h3>
+                        <div className="p-4 border rounded-lg bg-muted/50 flex items-center justify-between">
+                            <div className="space-y-0.5">
+                                <h4 className="font-medium">Remote Teams</h4>
+                                <p className="text-sm text-muted-foreground">Enable syncing ephemeral teams from remote configuration.</p>
+                            </div>
+                            <Switch checked={remoteTeamsEnabled} onCheckedChange={handleToggleRemoteTeams} />
                         </div>
                     </div>
 

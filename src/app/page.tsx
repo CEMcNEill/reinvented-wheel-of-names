@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { HelpCircle, Settings } from 'lucide-react';
 import { DeathModeToggle } from '@/components/death-mode-toggle';
 import { usePostHog } from 'posthog-js/react';
+import { RemoteTeamsInitializer } from '@/features/teams/components/remote-teams-initializer';
 
 export default function Home() {
   const { helpOpen, setHelpOpen, adminOpen, setAdminOpen, winner } = useAppStore();
@@ -19,7 +20,7 @@ export default function Home() {
   useEffect(() => {
     // Sync state with PostHog flag to control video mounting
     const checkFlag = () => {
-      setIsDeathMode(!!posthog.isFeatureEnabled('death-mode'));
+      setIsDeathMode(!!posthog.isFeatureEnabled('death_mode'));
     };
     checkFlag();
     const unregister = posthog.onFeatureFlags(checkFlag);
@@ -39,6 +40,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-8 transition-colors duration-300 relative isolate">
+      <RemoteTeamsInitializer />
+
       {/* Background Video for Death Mode */}
       {isDeathMode && (
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">

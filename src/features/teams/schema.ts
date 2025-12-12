@@ -30,3 +30,14 @@ export const createTeamSchema = teamSchema.pick({ name: true }).extend({
 export type TeamMember = z.infer<typeof teamMemberSchema>;
 export type Team = z.infer<typeof teamSchema>;
 export type CreateTeamInput = z.infer<typeof createTeamSchema>;
+
+// 5. Remote Team Schema (Feature Flag)
+export const remoteTeamPayloadSchema = z.object({
+    name: z.string().min(1, "Team name is required").max(50, "Team name is too long"),
+    members: z.array(z.object({
+        name: z.string().min(1, "Name is required").max(50, "Name is too long"),
+        avatarUrl: z.string().optional()
+    })).max(15, "Remote teams are limited to 15 members"),
+});
+
+export type RemoteTeamPayload = z.infer<typeof remoteTeamPayloadSchema>;

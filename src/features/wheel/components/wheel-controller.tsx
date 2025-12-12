@@ -157,7 +157,7 @@ export function WheelController() {
 
     const handleSubmit = async (data: CreateTeamInput) => {
         // Analytics: Track team interaction
-        const distinctId = posthog.get_distinct_id();
+
 
         if (editingTeam) {
             const membersWithIds = data.members.map(m => ({

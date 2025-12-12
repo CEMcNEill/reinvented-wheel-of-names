@@ -30,7 +30,7 @@ export function WheelCanvas() {
     const { segments } = useWheelSegments();
     const { isSpinning, setIsSpinning, winner, setWinner, spinRequest, resetSpinRequest, helpOpen } = useAppStore();
     const posthog = usePostHog();
-    const isDeathMode = posthog.isFeatureEnabled('death-mode');
+    const isDeathMode = posthog.isFeatureEnabled('death_mode');
     const controls = useAnimation();
     const [rotation, setRotation] = useState(0);
 

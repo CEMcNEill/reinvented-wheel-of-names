@@ -180,7 +180,7 @@
     }
   }
 
-  .death-mode {
+  .death_mode {
     --background: #000000;
     --foreground: #ffffff;
 
@@ -190,7 +190,8 @@
     --popover: #0a0a0a;
     --popover-foreground: #ffffff;
 
-    --primary: #dc2626; /* Intense Red */
+    --primary: #dc2626;
+    /* Intense Red */
     --primary-foreground: #ffffff;
 
     --secondary: #171717;
@@ -209,6 +210,7 @@
     --input: #333333;
     --ring: #dc2626;
   }
+
   * {
     @apply border-border;
   }

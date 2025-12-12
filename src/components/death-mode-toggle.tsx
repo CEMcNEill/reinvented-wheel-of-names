@@ -12,13 +12,13 @@ export function DeathModeToggle() {
     useEffect(() => {
         // Check cookie for persistence on mount
         const cookies = document.cookie.split('; ');
-        const deathModeCookie = cookies.find(row => row.startsWith('death-mode='));
+        const deathModeCookie = cookies.find(row => row.startsWith('death_mode='));
         if (deathModeCookie) {
             const isEnabled = deathModeCookie.split('=')[1] === 'true';
             if (isEnabled) {
                 posthog.featureFlags.overrideFeatureFlags({
                     flags: {
-                        'death-mode': true
+                        'death_mode': true
                     }
                 });
             }
@@ -28,14 +28,14 @@ export function DeathModeToggle() {
     useEffect(() => {
         // Sync state with PostHog flag
         const checkFlag = () => {
-            const flagValue = posthog.isFeatureEnabled('death-mode');
+            const flagValue = posthog.isFeatureEnabled('death_mode');
             setIsDeathMode(!!flagValue);
 
             // Update body class
             if (flagValue) {
-                document.body.classList.add('death-mode');
+                document.body.classList.add('death_mode');
             } else {
-                document.body.classList.remove('death-mode');
+                document.body.classList.remove('death_mode');
             }
         };
 
@@ -51,20 +51,20 @@ export function DeathModeToggle() {
         setIsDeathMode(newValue);
 
         // Save to cookie for persistence (1 year)
-        document.cookie = `death-mode=${newValue}; path=/; max-age=31536000`;
+        document.cookie = `death_mode=${newValue}; path=/; max-age=31536000`;
 
         // Override the feature flag locally
         posthog.featureFlags.overrideFeatureFlags({
             flags: {
-                'death-mode': newValue
+                'death_mode': newValue
             }
         });
 
         // Immediate UI feedback
         if (newValue) {
-            document.body.classList.add('death-mode');
+            document.body.classList.add('death_mode');
         } else {
-            document.body.classList.remove('death-mode');
+            document.body.classList.remove('death_mode');
         }
     };
 

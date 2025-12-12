@@ -13,7 +13,7 @@ export function WinnerModal() {
     const { winner, setWinner, activeTeamId, mode } = useAppStore();
     const { teams } = useTeams();
     const posthog = usePostHog();
-    const isDeathMode = posthog.isFeatureEnabled('death-mode');
+    const isDeathMode = posthog.isFeatureEnabled('death_mode');
 
     // Find team name
     const teamName = mode === 'team' && activeTeamId && teams
@@ -94,8 +94,8 @@ export function WinnerModal() {
         <Dialog open={!!winner} onOpenChange={(open) => !open && handleClose()}>
             {/* Reduced opacity to see the background video behind */}
             <DialogContent className={`sm:max-w-md text-center p-12 overflow-hidden relative ${isDeathMode
-                    ? 'border-red-900 bg-gradient-to-b from-red-950/70 to-black/70'
-                    : 'bg-gradient-to-b from-background/70 to-muted/70 backdrop-blur-md'
+                ? 'border-red-900 bg-gradient-to-b from-red-950/70 to-black/70'
+                : 'bg-gradient-to-b from-background/70 to-muted/70 backdrop-blur-md'
                 }`}>
 
                 {/* Content Container */}
