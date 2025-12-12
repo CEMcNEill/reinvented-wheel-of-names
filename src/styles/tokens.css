@@ -30,6 +30,18 @@
     --palette-complementary-800: #d39a3f;
     --palette-complementary-900: #c97830;
 
+    /* Analogous Palette 1 (Purple-leaning) */
+    --palette-analogous-1-500: #8b5cf6;
+
+    /* Analogous Palette 2 (Cyan-leaning) */
+    --palette-analogous-2-500: #06b6d4;
+
+    /* Triadic Palette 1 (Pink/Red-leaning) */
+    --palette-triadic-1-500: #ec4899;
+
+    /* Triadic Palette 2 (Green-leaning) */
+    --palette-triadic-2-500: #84cc16;
+
     /* Semantic Roles (Light Mode) */
     --background: #ffffff;
     --foreground: #0f172a;
