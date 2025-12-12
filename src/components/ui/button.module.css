@@ -1,0 +1,110 @@
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 0.375rem;
+    /* rounded-md */
+    font-size: 0.875rem;
+    /* text-sm */
+    font-weight: 500;
+    /* font-medium */
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    border: 1px solid transparent;
+    /* default border for alignment */
+}
+
+.btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+.btn:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Variants */
+.btn--default {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.btn--default:hover {
+    opacity: 0.9;
+}
+
+.btn--destructive {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+}
+
+.btn--destructive:hover {
+    opacity: 0.9;
+}
+
+.btn--outline {
+    border-color: var(--input);
+    background-color: var(--background);
+}
+
+.btn--outline:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.btn--secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+}
+
+.btn--secondary:hover {
+    opacity: 0.8;
+}
+
+.btn--ghost:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.btn--link {
+    color: var(--primary);
+    text-underline-offset: 4px;
+}
+
+.btn--link:hover {
+    text-decoration: underline;
+}
+
+/* Sizes */
+.btn--size-default {
+    height: 2.5rem;
+    /* h-10 */
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.btn--size-sm {
+    height: 2.25rem;
+    /* h-9 */
+    border-radius: 0.375rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+.btn--size-lg {
+    height: 2.75rem;
+    /* h-11 */
+    border-radius: 0.375rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.btn--size-icon {
+    height: 2.5rem;
+    width: 2.5rem;
+}

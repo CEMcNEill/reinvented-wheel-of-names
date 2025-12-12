@@ -51,6 +51,7 @@ function useRemoteTeam() {
                         avatarUrl: m.avatarUrl || ''
                     })),
                     order: -1, // Pin to top
+                    isRemote: true,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 };

@@ -51,7 +51,7 @@ export default function Home() {
             loop
             muted
             playsInline
-            className="absolute top-1/2 left-1/2 min-w-full min-h-full object-cover -translate-x-1/2 -translate-y-1/2 opacity-60"
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full object-cover -translate-x-1/2 -translate-y-1/2 opacity-95"
           >
             <source
               src={winner ? "/fire-confetti.mp4" : "/flames-background.mp4"}
@@ -59,7 +59,7 @@ export default function Home() {
             />
           </video>
           {/* Overlay to ensure text readability */}
-          <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
+          <div className="absolute inset-0 bg-black/20" />
         </div>
       )}
 
@@ -74,12 +74,12 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <DeathModeToggle />
             {/* Settings button */}
-            <Button variant="ghost" size="icon" onClick={() => setAdminOpen(true)} title="Settings">
+            <Button variant="ghost" size="icon" onClick={() => setAdminOpen(true)} title="Settings" className={isDeathMode ? 'text-gray-400 hover:text-gray-300' : ''}>
               <span className="sr-only">Settings</span>
               <Settings className="h-5 w-5" />
             </Button>
             {/* Help button */}
-            <Button variant="ghost" size="icon" onClick={() => setHelpOpen(true)} title="Help">
+            <Button variant="ghost" size="icon" onClick={() => setHelpOpen(true)} title="Help" className={isDeathMode ? 'text-gray-400 hover:text-gray-300' : ''}>
               <span className="sr-only">Help</span>
               <HelpCircle className="h-5 w-5" />
             </Button>

@@ -2,18 +2,23 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+import { usePostHog } from 'posthog-js/react';
+
 interface HelpModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
 
 export function HelpModal({ open, onOpenChange }: HelpModalProps) {
+    const posthog = usePostHog();
+    const isDeathMode = posthog.isFeatureEnabled('death_mode');
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 title="How to Use"
                 onClose={() => onOpenChange(false)}
-                className={cn('max-w-2xl')}
+                className={cn('max-w-2xl', isDeathMode && 'death_mode_vars')}
             >
                 <div className="space-y-4 text-sm text-foreground">
                     <p>

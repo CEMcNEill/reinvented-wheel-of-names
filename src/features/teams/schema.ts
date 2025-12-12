@@ -13,6 +13,7 @@ export const teamSchema = z.object({
     name: z.string().min(1, "Team name is required").max(50, "Team name is too long"),
     members: z.array(teamMemberSchema),
     order: z.number().default(0),
+    isRemote: z.boolean().default(false).optional(),
     createdAt: z.date(),
     updatedAt: z.date(),
 });

@@ -1,5 +1,3 @@
-'use client';
-
 import { useAppStore } from '@/lib/store';
 import { useTeams, useTeamActions } from '@/features/teams/hooks';
 import { Button } from '@/components/ui/button';
@@ -27,6 +25,8 @@ import {
 } from '@dnd-kit/sortable';
 import { SortableTeamItem } from './sortable-team-item';
 import { SortableAdHocItem } from './sortable-adhoc-item';
+import { cn } from '@/lib/utils';
+import styles from './wheel-controller.module.css';
 
 export function WheelController() {
     const posthog = usePostHog();
@@ -218,21 +218,28 @@ export function WheelController() {
         }
     };
 
+    const isDeathMode = posthog.isFeatureEnabled('death_mode');
+
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div className={styles['wheel-controller__loading']}>Loading...</div>;
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold font-heading">Choose a List</h2>
+        <div className={styles['wheel-controller']}>
+            <div className={styles['wheel-controller__header']}>
+                <h2 className={cn(
+                    styles['wheel-controller__title'],
+                    isDeathMode && styles['wheel-controller__title--death-mode']
+                )}>
+                    Choose a List
+                </h2>
                 <Button onClick={handleCreate} size="sm">
                     <Plus className="mr-2 h-4 w-4" />
                     New Team
                 </Button>
             </div>
 
-            <div className="space-y-4">
+            <div className={styles['wheel-controller__list']}>
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -274,6 +281,7 @@ export function WheelController() {
                 <DialogContent
                     title={editingTeam ? "Edit Team" : "Create New Team"}
                     onClose={() => setIsDialogOpen(false)}
+                    className={isDeathMode ? 'death_mode_vars' : ''}
                 >
                     <TeamForm
                         initialData={editingTeam || undefined}

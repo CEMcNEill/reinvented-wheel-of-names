@@ -1,0 +1,22 @@
+.sortable-item-wrapper {
+    position: relative;
+    /* styles from style prop are mostly handled by dnd-kit, but we can add cursor styles here if needed */
+}
+
+.sortable-adhoc-item {
+    cursor: pointer;
+}
+
+.sortable-adhoc-item__content {
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    transition-property: box-shadow;
+    transition-duration: 150ms;
+}
+
+.sortable-adhoc-item__content--active {
+    /* ring-2 ring-primary shadow-md */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 2px var(--primary);
+    /* Ring simulation */
+    box-shadow: 0 0 0 5px var(--primary);
+}

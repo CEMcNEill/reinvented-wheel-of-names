@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import styles from "./ui-components.module.css";
 
 interface SwitchProps {
     checked: boolean;
@@ -15,15 +16,15 @@ export function Switch({ checked, onCheckedChange, className }: SwitchProps) {
             type="button"
             role="switch"
             aria-checked={checked}
+            data-state={checked ? "checked" : "unchecked"}
             onClick={() => onCheckedChange(!checked)}
             className={cn(
-                "w-11 h-6 bg-input rounded-full p-1 transition-colors cursor-pointer",
-                checked && "bg-primary",
+                styles.switch,
                 className
             )}
         >
             <motion.div
-                className="w-4 h-4 bg-white rounded-full shadow-sm"
+                className={styles['switch__thumb']}
                 layout
                 transition={{
                     type: "spring",

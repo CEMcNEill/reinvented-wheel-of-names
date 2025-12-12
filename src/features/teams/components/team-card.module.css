@@ -1,0 +1,132 @@
+.team-card {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    cursor: pointer;
+    position: relative;
+}
+
+.team-card:hover {
+    border-color: var(--muted-foreground);
+    /* Fallback or specific hover state */
+}
+
+/* Modifiers */
+.team-card--active {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* shadow-md */
+    border-color: var(--primary);
+    /* Ring simulation */
+    box-shadow: 0 0 0 5px var(--primary);
+}
+
+.team-card--inactive {
+    background-color: var(--card);
+}
+
+.team-card__actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.25rem;
+    z-index: 10;
+}
+
+.team-card__action-btn {
+    height: 2rem;
+    width: 2rem;
+    color: var(--muted-foreground);
+}
+
+.team-card__action-btn:hover {
+    color: var(--foreground);
+}
+
+.team-card__action-btn--delete:hover {
+    color: var(--destructive);
+    background-color: var(--destructive-foreground);
+    /* approximation of red-50 */
+}
+
+.team-card__header {
+    padding-bottom: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.5rem;
+}
+
+.team-card__title {
+    font-size: 1.125rem;
+    /* text-lg */
+    font-weight: 700;
+    padding-right: 4rem;
+}
+
+.team-card__members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.team-member-pill {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    /* text-sm */
+    border: 1px solid transparent;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.team-member-pill--active {
+    background-color: color-mix(in srgb, var(--primary) 20%, transparent);
+    /* bg-primary/20 */
+    color: var(--primary);
+    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.team-member-pill--active:hover {
+    background-color: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.team-member-pill--excluded {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    border-color: var(--border);
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.team-member-pill--inactive {
+    background-color: rgba(255, 255, 255, 0.1);
+    /* fallback/placeholder */
+    /* We need a secondary transparent color here optimally */
+    background-color: var(--secondary);
+    opacity: 0.5;
+    color: var(--secondary-foreground);
+    border-color: transparent;
+}
+
+.team-member-pill--inactive:hover {
+    opacity: 0.8;
+}
+
+.team-card__hint {
+    font-size: 0.75rem;
+    /* text-xs */
+    color: var(--muted-foreground);
+    margin-top: 1rem;
+    text-align: center;
+}

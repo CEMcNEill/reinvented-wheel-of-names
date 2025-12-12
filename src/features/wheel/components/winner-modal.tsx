@@ -8,6 +8,8 @@ import { useTeams } from '@/features/teams/hooks';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Trophy, Skull, User } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import styles from './winner-modal.module.css';
 
 export function WinnerModal() {
     const { winner, setWinner, activeTeamId, mode } = useAppStore();
@@ -93,37 +95,46 @@ export function WinnerModal() {
     return (
         <Dialog open={!!winner} onOpenChange={(open) => !open && handleClose()}>
             {/* Reduced opacity to see the background video behind */}
-            <DialogContent className={`sm:max-w-md text-center p-12 overflow-hidden relative ${isDeathMode
-                ? 'border-red-900 bg-gradient-to-b from-red-950/70 to-black/70'
-                : 'bg-gradient-to-b from-background/70 to-muted/70 backdrop-blur-md'
-                }`}>
+            <DialogContent className={cn(
+                styles['winner-modal__content'],
+                isDeathMode && styles['winner-modal__content--death-mode']
+            )}>
 
                 {/* Content Container */}
-                <div className="flex flex-col items-center gap-6 relative z-10">
-                    <div className={`p-4 rounded-full animate-bounce ${isDeathMode ? 'bg-red-950/50 text-red-500' : 'bg-primary/10 text-primary'}`}>
-                        {isDeathMode ? <Skull size={48} /> : <Trophy size={48} />}
+                <div className={styles['winner-modal__container']}>
+                    <div className={cn(
+                        styles['winner-modal__icon-wrapper'],
+                        isDeathMode && styles['winner-modal__icon-wrapper--death-mode']
+                    )}>
+                        {isDeathMode ? <Skull className="w-8 h-8 sm:w-12 sm:h-12" /> : <Trophy className="w-8 h-8 sm:w-12 sm:h-12" />}
                     </div>
 
-                    <div className="space-y-2">
-                        <h2 className={`text-2xl font-semibold ${isDeathMode ? 'text-red-400' : 'text-muted-foreground'}`}>
+                    <div className={styles['winner-modal__title-group']}>
+                        <h2 className={cn(
+                            styles['winner-modal__title'],
+                            isDeathMode && styles['winner-modal__title--death-mode']
+                        )}>
                             {isDeathMode ? 'THE CHOSEN ONE' : 'We have a winner!'}
                         </h2>
                         {isDeathMode && !winner?.includes('Sean') && (
-                            <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-2 flex items-center justify-center text-gray-500">
+                            <div className={styles['winner-modal__avatar-placeholder']}>
                                 {/* Placeholder for Avatar if real avatars aren't available yet */}
-                                <User size={48} />
+                                <User className="w-12 h-12" />
                             </div>
                         )}
                         <div className="flex flex-col items-center">
-                            <p className={`text-4xl font-heading font-bold break-words ${isDeathMode ? 'text-red-500 drop-shadow-[0_2px_4px_rgba(220,38,38,0.5)]' : 'text-foreground'}`}>
+                            <p className={cn(
+                                styles['winner-modal__winner-name'],
+                                isDeathMode && styles['winner-modal__winner-name--death-mode']
+                            )}>
                                 {winner}
                             </p>
                             {isDeathMode && teamName && (
-                                <p className="text-red-400 text-sm mt-1">{teamName}</p>
+                                <p className={styles['winner-modal__team-name']}>{teamName}</p>
                             )}
                         </div>
                         {isDeathMode && (
-                            <p className="text-red-200 mt-4 max-w-[200px] mx-auto leading-tight">
+                            <p className={styles['winner-modal__flavour-text']}>
                                 You have been chosen for the pipeline review sacrifice! 🔥
                             </p>
                         )}
@@ -132,7 +143,10 @@ export function WinnerModal() {
                     <Button
                         size="lg"
                         onClick={handleClose}
-                        className={`mt-4 w-full ${isDeathMode ? 'bg-red-900 hover:bg-red-800 text-white' : ''}`}
+                        className={cn(
+                            styles['winner-modal__action'],
+                            isDeathMode && styles['winner-modal__action--death-mode']
+                        )}
                     >
                         {isDeathMode ? 'Accept Fate' : 'Awesome!'}
                     </Button>

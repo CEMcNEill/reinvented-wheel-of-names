@@ -1,0 +1,166 @@
+.winner-modal__content {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 1.5rem;
+    /* p-6 */
+    /* sm:max-w-md is handled by dialog max-width usually, but we can enforce it here */
+    max-width: 28rem;
+    background-image: linear-gradient(to bottom, rgba(var(--background), 0.7), rgba(var(--muted), 0.7));
+    backdrop-filter: blur(12px);
+}
+
+@media (min-width: 640px) {
+    .winner-modal__content {
+        padding: 3rem;
+        /* sm:p-12 */
+    }
+}
+
+.winner-modal__content--death-mode {
+    border-color: #7f1d1d;
+    /* border-red-900 */
+    /* bg-gradient-to-b from-red-950/70 to-black/70 */
+    background-image: linear-gradient(to bottom, rgba(69, 10, 10, 0.7), rgba(0, 0, 0, 0.7));
+}
+
+.winner-modal__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    /* gap-6 */
+    position: relative;
+    z-index: 10;
+}
+
+.winner-modal__icon-wrapper {
+    padding: 1rem;
+    border-radius: 9999px;
+    animation: bounce 1s infinite;
+    background-color: rgba(var(--primary), 0.1);
+    color: var(--primary);
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(-25%);
+        animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+
+    50% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+}
+
+.winner-modal__icon-wrapper--death-mode {
+    background-color: rgba(69, 10, 10, 0.5);
+    /* bg-red-950/50 */
+    color: #ef4444;
+    /* text-red-500 */
+}
+
+.winner-modal__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    /* space-y-2 */
+}
+
+.winner-modal__title {
+    font-size: 1.25rem;
+    /* text-xl */
+    font-weight: 600;
+    /* font-semibold */
+    color: var(--muted-foreground);
+}
+
+@media (min-width: 640px) {
+    .winner-modal__title {
+        font-size: 1.5rem;
+        /* sm:text-2xl */
+    }
+}
+
+.winner-modal__title--death-mode {
+    color: #f87171;
+    /* text-red-400 */
+}
+
+.winner-modal__avatar-placeholder {
+    width: 6rem;
+    /* w-24 */
+    height: 6rem;
+    /* h-24 */
+    background-color: #d1d5db;
+    /* bg-gray-300 */
+    border-radius: 9999px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.5rem;
+    /* mb-2 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    /* text-gray-500 */
+}
+
+.winner-modal__winner-name {
+    font-size: 1.875rem;
+    /* text-3xl */
+    font-family: var(--font-heading);
+    font-weight: 700;
+    word-break: break-word;
+    color: var(--foreground);
+}
+
+@media (min-width: 640px) {
+    .winner-modal__winner-name {
+        font-size: 2.25rem;
+        /* sm:text-4xl */
+    }
+}
+
+.winner-modal__winner-name--death-mode {
+    color: #ef4444;
+    /* text-red-500 */
+    filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.5));
+}
+
+.winner-modal__team-name {
+    color: #f87171;
+    /* text-red-400 */
+    font-size: 0.875rem;
+    /* text-sm */
+    margin-top: 0.25rem;
+}
+
+.winner-modal__flavour-text {
+    color: #fecaca;
+    /* text-red-200 */
+    margin-top: 1rem;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.25;
+}
+
+.winner-modal__action {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.winner-modal__action--death-mode {
+    background-color: #7f1d1d;
+    /* bg-red-900 */
+    color: #ffffff;
+}
+
+.winner-modal__action--death-mode:hover {
+    background-color: #991b1b;
+    /* hover:bg-red-800 */
+}

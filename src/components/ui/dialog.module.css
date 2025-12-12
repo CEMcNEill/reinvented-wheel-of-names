@@ -1,0 +1,96 @@
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.dialog-overlay__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* black/50 */
+    backdrop-filter: blur(4px);
+}
+
+.dialog-content {
+    position: relative;
+    width: 95vw;
+    max-width: 32rem;
+    /* max-w-lg */
+    max-height: 85vh;
+    background-color: var(--background);
+    border-radius: 0.75rem;
+    /* rounded-xl */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    /* shadow-2xl */
+    overflow: hidden;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    color: var(--foreground);
+}
+
+@media (min-width: 640px) {
+    .dialog-content {
+        width: 100%;
+        max-height: 90vh;
+    }
+}
+
+/* Modifiers */
+/* Ensure that when .death_mode_vars is applied, we strictly use the vars */
+.dialog-content :global(.death_mode_vars) {
+    /* No special overrides needed if vars work correctly, 
+     but we can enforce background if portal causes issues */
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+.dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .dialog-header {
+        padding: 1.5rem;
+    }
+}
+
+.dialog-title {
+    font-size: 1.25rem;
+    /* text-xl */
+    font-weight: 700;
+    font-family: var(--font-heading);
+}
+
+.dialog-close {
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
+    border-radius: 9999px;
+}
+
+.dialog-body {
+    padding: 1rem;
+    overflow-y: auto;
+    flex: 1 1 0%;
+}
+
+@media (min-width: 640px) {
+    .dialog-body {
+        padding: 1.5rem;
+    }
+}
+
+.dialog-body--no-padding {
+    padding: 0;
+}

@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { ReactNode, useEffect } from "react";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
+import styles from "./dialog.module.css";
 
 interface DialogProps {
     open: boolean;
@@ -27,13 +28,13 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
     return (
         <AnimatePresence>
             {open && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className={styles['dialog-overlay']}>
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => onOpenChange(false)}
-                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        className={styles['dialog-overlay__backdrop']}
                     />
                     {children}
                 </div>
@@ -46,7 +47,7 @@ interface DialogContentProps {
     title?: string;
     children: ReactNode;
     onClose?: () => void;
-    className?: string;
+    className?: string; // This will receive 'death_mode_vars' potentially
 }
 
 export function DialogContent({ title, children, onClose, className }: DialogContentProps) {
@@ -55,23 +56,25 @@ export function DialogContent({ title, children, onClose, className }: DialogCon
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className={cn(
-                "relative w-full max-w-lg bg-background rounded-xl shadow-2xl overflow-hidden border border-border",
-                className
-            )}
+            className={cn(styles['dialog-content'], className)}
             onClick={(e) => e.stopPropagation()}
         >
             {(title || onClose) && (
-                <div className="flex items-center justify-between p-6 border-b border-border">
-                    {title && <h3 className="text-xl font-bold font-heading">{title}</h3>}
+                <div className={styles['dialog-header']}>
+                    {title && <h3 className={styles['dialog-title']}>{title}</h3>}
                     {onClose && (
-                        <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 rounded-full">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onClose}
+                            className={styles['dialog-close']}
+                        >
                             <X className="h-4 w-4" />
                         </Button>
                     )}
                 </div>
             )}
-            <div className={cn("p-6", !title && !onClose && "p-0")}>
+            <div className={cn(styles['dialog-body'], !title && !onClose && styles['dialog-body--no-padding'])}>
                 {children}
             </div>
         </motion.div>

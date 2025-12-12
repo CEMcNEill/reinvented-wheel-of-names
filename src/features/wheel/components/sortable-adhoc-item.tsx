@@ -3,6 +3,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { AdHocInput } from '@/features/adhoc/components/adhoc-input';
+import { cn } from '@/lib/utils';
+import styles from './sortable-item.module.css';
 
 interface SortableAdHocItemProps {
     isActive: boolean;
@@ -31,8 +33,11 @@ export function SortableAdHocItem({ isActive, onSelect, onNavigateUp, onNavigate
 
     return (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            <div onClick={onSelect} className="cursor-pointer">
-                <div className={isActive ? "ring-2 ring-primary rounded-lg shadow-md" : ""}>
+            <div onClick={onSelect} className={styles['sortable-adhoc-item']}>
+                <div className={cn(
+                    styles['sortable-adhoc-item__content'],
+                    isActive && styles['sortable-adhoc-item__content--active']
+                )}>
                     <AdHocInput onNavigateUp={onNavigateUp} onNavigateDown={onNavigateDown} />
                 </div>
             </div>

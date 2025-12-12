@@ -1,0 +1,83 @@
+.admin-modal {
+    max-width: 42rem;
+    /* max-w-2xl */
+}
+
+.admin-modal__content {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    /* space-y-8 */
+}
+
+.admin-modal__section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    /* space-y-4 */
+}
+
+.admin-modal__section-title {
+    font-size: 1.125rem;
+    /* text-lg */
+    font-weight: 500;
+    /* font-medium */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-modal__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.admin-modal__card {
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    background-color: rgba(var(--muted), 0.5);
+    /* bg-muted/50 - requires proper var handling or fallback */
+    background-color: var(--muted);
+    /* Simplified fallback */
+    /* If background opacity is needed, we should define a variable for it or use color-mix */
+
+    /* Layout for horizontal items */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    /* space-y-2 */
+}
+
+.admin-modal__card--row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-modal__card-header {
+    /* space-y-0.5 */
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.admin-modal__card-title {
+    font-weight: 500;
+    /* font-medium */
+}
+
+.admin-modal__card-desc {
+    font-size: 0.875rem;
+    /* text-sm */
+    color: var(--muted-foreground);
+}
+
+.admin-modal__action-row {
+    display: flex;
+    gap: 0.5rem;
+}

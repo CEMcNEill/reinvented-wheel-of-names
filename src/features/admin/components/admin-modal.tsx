@@ -8,6 +8,8 @@ import { Database, Bug, Download, Upload, Globe } from "lucide-react";
 import { downloadBackup } from "../services/export-service";
 import { importData } from "../services/import-service";
 import { usePostHog } from 'posthog-js/react';
+import { cn } from "@/lib/utils";
+import styles from "./admin-modal.module.css";
 
 interface AdminModalProps {
     open: boolean;
@@ -19,8 +21,7 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
     const { verboseLogging, setVerboseLogging } = useAppStore();
     const posthog = usePostHog();
     const [remoteTeamsEnabled, setRemoteTeamsEnabled] = useState(false);
-
-
+    const isDeathMode = posthog.isFeatureEnabled('death_mode');
 
     // Sync state with PostHog flag
     useEffect(() => {
@@ -76,28 +77,35 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent title="Admin Panel" onClose={() => onOpenChange(false)} className="max-w-2xl">
-                <div className="space-y-8 py-4">
+            <DialogContent
+                title="Admin Panel"
+                onClose={() => onOpenChange(false)}
+                className={cn(
+                    styles['admin-modal'],
+                    isDeathMode && 'death_mode_vars'
+                )}
+            >
+                <div className={styles['admin-modal__content']}>
                     {/* Data Management Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
+                    <div className={styles['admin-modal__section']}>
+                        <h3 className={styles['admin-modal__section-title']}>
                             <Database className="h-5 w-5" />
                             Backup & Restore
                         </h3>
-                        <div className="flex flex-col gap-4">
-                            <div className="p-4 border rounded-lg bg-muted/50 space-y-2">
-                                <h4 className="font-medium">Export Data</h4>
-                                <p className="text-sm text-muted-foreground">Download a JSON backup of all teams, members, and settings.</p>
+                        <div className={styles['admin-modal__cards']}>
+                            <div className={styles['admin-modal__card']}>
+                                <h4 className={styles['admin-modal__card-title']}>Export Data</h4>
+                                <p className={styles['admin-modal__card-desc']}>Download a JSON backup of all teams, members, and settings.</p>
                                 <Button onClick={handleExport} variant="outline" className="w-full sm:w-auto">
                                     <Download className="mr-2 h-4 w-4" />
                                     Download Backup
                                 </Button>
                             </div>
 
-                            <div className="p-4 border rounded-lg bg-muted/50 space-y-2">
-                                <h4 className="font-medium">Import Data</h4>
-                                <p className="text-sm text-muted-foreground">Restore from a JSON backup file. This will overwrite current data.</p>
-                                <div className="flex gap-2">
+                            <div className={styles['admin-modal__card']}>
+                                <h4 className={styles['admin-modal__card-title']}>Import Data</h4>
+                                <p className={styles['admin-modal__card-desc']}>Restore from a JSON backup file. This will overwrite current data.</p>
+                                <div className={styles['admin-modal__action-row']}>
                                     <Input
                                         type="file"
                                         accept=".json"
@@ -115,31 +123,31 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
                     </div>
 
                     {/* Features Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
+                    <div className={styles['admin-modal__section']}>
+                        <h3 className={styles['admin-modal__section-title']}>
                             <Globe className="h-5 w-5" />
                             Experimental Features
                         </h3>
-                        <div className="p-4 border rounded-lg bg-muted/50 flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <h4 className="font-medium">Remote Teams</h4>
-                                <p className="text-sm text-muted-foreground">Enable syncing ephemeral teams from remote configuration.</p>
+                        <div className={cn(styles['admin-modal__card'], styles['admin-modal__card--row'])}>
+                            <div className={styles['admin-modal__card-header']}>
+                                <h4 className={styles['admin-modal__card-title']}>Remote Teams</h4>
+                                <p className={styles['admin-modal__card-desc']}>Enable syncing ephemeral teams from remote configuration.</p>
                             </div>
                             <Switch checked={remoteTeamsEnabled} onCheckedChange={handleToggleRemoteTeams} />
                         </div>
                     </div>
 
                     {/* Debug Tools Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
+                    <div className={styles['admin-modal__section']}>
+                        <h3 className={styles['admin-modal__section-title']}>
                             <Bug className="h-5 w-5" />
                             Debug Tools
                         </h3>
 
-                        <div className="p-4 border rounded-lg bg-muted/50 flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <h4 className="font-medium">Verbose Logging</h4>
-                                <p className="text-sm text-muted-foreground">Log detailed wheel physics and state changes to console.</p>
+                        <div className={cn(styles['admin-modal__card'], styles['admin-modal__card--row'])}>
+                            <div className={styles['admin-modal__card-header']}>
+                                <h4 className={styles['admin-modal__card-title']}>Verbose Logging</h4>
+                                <p className={styles['admin-modal__card-desc']}>Log detailed wheel physics and state changes to console.</p>
                             </div>
                             <Switch checked={verboseLogging} onCheckedChange={setVerboseLogging} />
                         </div>
