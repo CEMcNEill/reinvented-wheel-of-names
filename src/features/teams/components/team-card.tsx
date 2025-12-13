@@ -1,10 +1,11 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Edit, Check, X } from "lucide-react";
+import { Trash2, Edit, Check, X, Star } from "lucide-react";
 import type { Team } from "../schema";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import styles from "./team-card.module.css";
+import { Logger } from '@/lib/logger';
 
 interface TeamCardProps {
     team: Team;
@@ -15,7 +16,7 @@ interface TeamCardProps {
 }
 
 export function TeamCard({ team, isActive, onSelect, onEdit, onDelete }: TeamCardProps) {
-    const { excludedMemberIds, toggleMemberExclusion } = useAppStore();
+    const { excludedMemberIds, toggleMemberExclusion, verboseLogging } = useAppStore();
 
     const handleCardClick = () => {
         if (!isActive) {
@@ -71,7 +72,10 @@ export function TeamCard({ team, isActive, onSelect, onEdit, onDelete }: TeamCar
             <CardContent>
                 <div className={styles['team-card__members']}>
                     {team.members.map((member) => {
-                        const isExcluded = isActive && excludedMemberIds.includes(member.id);
+                        const isExcluded = excludedMemberIds.includes(member.id);
+                        if (verboseLogging) {
+                            Logger.log(`Card Render: Member ${member.name} (${member.id}) Lead? ${member.isLead} Excluded? ${isExcluded}. Store Excluded:`, excludedMemberIds);
+                        }
 
                         let memberClass = styles['team-member-pill'];
                         if (isActive) {
@@ -91,6 +95,7 @@ export function TeamCard({ team, isActive, onSelect, onEdit, onDelete }: TeamCar
                                 className={memberClass}
                             >
                                 {member.name}
+                                {member.isLead && <Star className="ml-1 h-4 w-4 text-yellow-500" />}
                                 {isActive && (
                                     isExcluded ? <X size={12} /> : <Check size={12} />
                                 )}

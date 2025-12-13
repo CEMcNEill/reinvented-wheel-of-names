@@ -17,10 +17,12 @@ export function WinnerModal() {
     const posthog = usePostHog();
     const isDeathMode = posthog.isFeatureEnabled('death_mode');
 
-    // Find team name
-    const teamName = mode === 'team' && activeTeamId && teams
-        ? teams.find(t => t.id === activeTeamId)?.name
-        : '';
+    const activeTeam = mode === 'team' && activeTeamId && teams
+        ? teams.find(t => t.id === activeTeamId)
+        : null;
+    const teamName = activeTeam?.name || '';
+    const winnerMember = activeTeam?.members.find(m => m.name === winner);
+    const winnerAvatarUrl = winnerMember?.avatarUrl;
 
     const handleClose = useCallback(() => {
         setWinner(null);
@@ -116,12 +118,22 @@ export function WinnerModal() {
                         )}>
                             {isDeathMode ? 'THE CHOSEN ONE' : 'We have a winner!'}
                         </h2>
-                        {isDeathMode && !winner?.includes('Sean') && (
-                            <div className={styles['winner-modal__avatar-placeholder']}>
-                                {/* Placeholder for Avatar if real avatars aren't available yet */}
+
+                        <div className={cn(
+                            styles['winner-modal__avatar-placeholder'],
+                            "overflow-hidden"
+                        )}>
+                            {winnerAvatarUrl ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img
+                                    src={winnerAvatarUrl}
+                                    alt={winner || 'Winner'}
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
                                 <User className="w-12 h-12" />
-                            </div>
-                        )}
+                            )}
+                        </div>
                         <div className="flex flex-col items-center">
                             <p className={cn(
                                 styles['winner-modal__winner-name'],

@@ -4,7 +4,9 @@ import { z } from 'zod';
 export const teamMemberSchema = z.object({
     id: z.string().uuid(),
     name: z.string().min(1, "Name is required").max(50, "Name is too long"),
-    avatarUrl: z.string().url().optional().or(z.literal('')),
+    role: z.string().optional(),
+    isLead: z.boolean().optional(),
+    avatarUrl: z.string().optional(),
 });
 
 // 2. Define the Team Schema
@@ -23,7 +25,9 @@ export const teamSchema = z.object({
 export const createTeamSchema = teamSchema.pick({ name: true }).extend({
     members: z.array(z.object({
         name: z.string().max(50, "Name is too long"), // Allow empty strings for form handling
-        avatarUrl: z.string().url().optional().or(z.literal(''))
+        avatarUrl: z.string().url().optional().or(z.literal('')),
+        role: z.string().optional(),
+        isLead: z.boolean().optional(),
     })),
 });
 

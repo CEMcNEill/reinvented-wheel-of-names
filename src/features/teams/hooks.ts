@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { teamService } from './service';
 import { posthog } from '../../lib/posthog';
+import { Logger } from '@/lib/logger';
 import { remoteTeamPayloadSchema, type Team } from './schema';
 
 function useRemoteTeam() {
@@ -26,7 +27,7 @@ function useRemoteTeam() {
                 // Parse and validate
                 const result = remoteTeamPayloadSchema.safeParse(payload);
                 if (!result.success) {
-                    console.warn('Invalid remote team payload:', result.error);
+                    Logger.warn('Invalid remote team payload:', result.error);
                     setRemoteTeam(null);
                     return;
                 }
@@ -59,7 +60,7 @@ function useRemoteTeam() {
                 setRemoteTeam(team);
 
             } catch (e) {
-                console.error('Error processing remote team:', e);
+                Logger.error('Error processing remote team:', e);
             }
         };
 

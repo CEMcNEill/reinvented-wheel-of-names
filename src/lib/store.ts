@@ -17,6 +17,7 @@ interface AppState {
     setActiveTeamId: (id: string | null) => void;
 
     excludedMemberIds: string[];
+    teamExclusions: Record<string, string[]>;
     setExcludedMemberIds: (ids: string[]) => void;
     toggleMemberExclusion: (id: string) => void;
 
@@ -45,7 +46,7 @@ interface AppState {
 
 export const useAppStore = create<AppState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             // UI Modals
             helpOpen: false,
             setHelpOpen: (open) => set({ helpOpen: open }),
@@ -57,15 +58,60 @@ export const useAppStore = create<AppState>()(
             setMode: (mode) => set({ mode }),
 
             activeTeamId: null,
-            setActiveTeamId: (id) => set({ activeTeamId: id, excludedMemberIds: [] }), // Clear exclusions on team change
+            setActiveTeamId: (id) => {
+                set((state) => {
+                    if (state.activeTeamId === id) {
+                        return {};
+                    }
+                    if (state.verboseLogging) {
+                        console.log('STORE: setActiveTeamId called with', id);
+                    }
+                    // Load exclusions for this team
+                    const exclusions = id ? (state.teamExclusions[id] || []) : [];
+                    return { activeTeamId: id, excludedMemberIds: exclusions };
+                });
+            },
 
             excludedMemberIds: [],
-            setExcludedMemberIds: (ids) => set({ excludedMemberIds: ids }),
-            toggleMemberExclusion: (id) => set((state) => ({
-                excludedMemberIds: state.excludedMemberIds.includes(id)
+            teamExclusions: {},
+            setExcludedMemberIds: (ids) => {
+                if (get().verboseLogging) {
+                    console.log('STORE: setExcludedMemberIds called with', ids);
+                }
+                set((state) => {
+                    const newExclusions = { ...state.teamExclusions };
+                    if (state.activeTeamId) {
+                        newExclusions[state.activeTeamId] = ids;
+                    }
+
+                    // Write to cookie
+                    if (typeof document !== 'undefined') {
+                        document.cookie = `wheel_exclusions=${JSON.stringify(newExclusions)}; path=/; max-age=31536000`;
+                    }
+
+                    return { excludedMemberIds: ids, teamExclusions: newExclusions };
+                });
+            },
+            toggleMemberExclusion: (id) => set((state) => {
+                const newIds = state.excludedMemberIds.includes(id)
                     ? state.excludedMemberIds.filter(mid => mid !== id)
-                    : [...state.excludedMemberIds, id]
-            })),
+                    : [...state.excludedMemberIds, id];
+
+                const newExclusions = { ...state.teamExclusions };
+                if (state.activeTeamId) {
+                    newExclusions[state.activeTeamId] = newIds;
+                }
+
+                // Write to cookie
+                if (typeof document !== 'undefined') {
+                    document.cookie = `wheel_exclusions=${JSON.stringify(newExclusions)}; path=/; max-age=31536000`;
+                }
+
+                return {
+                    excludedMemberIds: newIds,
+                    teamExclusions: newExclusions
+                };
+            }),
 
             adHocTitle: '',
             setAdHocTitle: (title) => set({ adHocTitle: title }),
@@ -94,6 +140,7 @@ export const useAppStore = create<AppState>()(
                 activeTeamId: state.activeTeamId,
                 adHocNames: state.adHocNames,
                 excludedMemberIds: state.excludedMemberIds,
+                teamExclusions: state.teamExclusions,
                 adHocOrder: state.adHocOrder,
                 verboseLogging: state.verboseLogging // Persist debug setting
             }), // Don't persist transient states like isSpinning

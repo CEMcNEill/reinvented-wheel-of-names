@@ -33,7 +33,9 @@ export const teamService = {
             members: input.members.map(m => ({
                 id: uuidv4(),
                 name: m.name,
-                avatarUrl: m.avatarUrl
+                avatarUrl: m.avatarUrl,
+                role: m.role,
+                isLead: m.isLead
             })),
             order: maxOrder + 1,
             createdAt: new Date(),

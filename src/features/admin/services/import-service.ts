@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { useAppStore } from "@/lib/store";
+import { Logger } from '@/lib/logger';
 
 // Schema for validation
 const backupSchema = z.object({
@@ -55,7 +56,7 @@ export const importData = async (jsonString: string) => {
 
         return true;
     } catch (error) {
-        console.error("Import failed:", error);
-        throw new Error("Invalid backup file format.");
+        Logger.error("Import failed:", error);
+        return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
     }
 };

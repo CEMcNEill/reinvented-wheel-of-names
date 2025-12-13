@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { useAppStore } from "@/lib/store";
-import { Team } from "@/features/teams/schema";
+import { Logger } from '@/lib/logger';
+import type { Team } from "@/features/teams/schema"; // Changed to type import, kept original path
 
 export interface BackupData {
     version: number;
@@ -38,13 +39,13 @@ export const downloadBackup = async () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `wheel-of-names-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `wheel - of - names - backup - ${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     } catch (error) {
-        console.error("Export failed:", error);
+        Logger.error("Export failed:", error);
         alert("Failed to export data.");
     }
 };

@@ -19,8 +19,11 @@ export const initPostHog = () => {
             bootstrap: {
                 featureFlags: bootstrapFlags,
             },
-            loaded: (posthog) => {
-                if (process.env.NODE_ENV === 'development') posthog.debug();
+            loaded: () => {
+                // Debug mode is now handled by the PostHogProvider based on store settings
+                if (process.env.NODE_ENV === 'development') {
+                    // posthog.debug(); // Disabled by default
+                }
             },
         });
     }
