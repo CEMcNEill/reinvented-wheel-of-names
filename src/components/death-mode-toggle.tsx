@@ -53,10 +53,16 @@ export function DeathModeToggle() {
         // Save to cookie for persistence (1 year)
         document.cookie = `death_mode=${newValue}; path=/; max-age=31536000`;
 
-        // Override the feature flag locally
+        // Read other cookies to preserve their state
+        const cookies = document.cookie.split('; ');
+        const remoteTeamsCookie = cookies.find(row => row.startsWith('enable_remote_teams='));
+        const remoteTeamsEnabled = remoteTeamsCookie ? remoteTeamsCookie.split('=')[1] === 'true' : false;
+
+        // Override the feature flag locally, preserving other flags
         posthog.featureFlags.overrideFeatureFlags({
             flags: {
-                'death_mode': newValue
+                'death_mode': newValue,
+                'enable_remote_teams': remoteTeamsEnabled
             }
         });
 

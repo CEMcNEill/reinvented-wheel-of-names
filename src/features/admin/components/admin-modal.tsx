@@ -39,10 +39,16 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
         // Save to cookie (1 year)
         document.cookie = `enable_remote_teams=${enabled}; path=/; max-age=31536000`;
 
-        // Override PostHog flag locally
+        // Read other cookies to preserve their state
+        const cookies = document.cookie.split('; ');
+        const deathModeCookie = cookies.find(row => row.startsWith('death_mode='));
+        const isDeathMode = deathModeCookie ? deathModeCookie.split('=')[1] === 'true' : false;
+
+        // Override PostHog flag locally, preserving other flags
         posthog.featureFlags.overrideFeatureFlags({
             flags: {
-                'enable_remote_teams': enabled
+                'enable_remote_teams': enabled,
+                'death_mode': isDeathMode
             }
         });
     };
