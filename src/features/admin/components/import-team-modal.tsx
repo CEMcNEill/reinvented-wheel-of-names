@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { fetchTeams, fetchTeamMembers, type StrapiTeam } from '@/features/teams/services/strapi-service';
 import { useTeamActions } from '@/features/teams/hooks';
 import { Loader2, AlertCircle } from 'lucide-react';
@@ -17,6 +18,7 @@ interface ImportTeamModalProps {
 export function ImportTeamModal({ open, onOpenChange }: ImportTeamModalProps) {
     const { verboseLogging, setExcludedMemberIds, setActiveTeamId, setMode } = useAppStore();
     const [teams, setTeams] = useState<StrapiTeam[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [importingInfo, setImportingInfo] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -44,8 +46,15 @@ export function ImportTeamModal({ open, onOpenChange }: ImportTeamModalProps) {
     useEffect(() => {
         if (open) {
             loadTeams();
+            setSearchTerm('');
         }
     }, [open, loadTeams]);
+
+    const filteredTeams = useMemo(() => {
+        if (!searchTerm) return teams;
+        const lowerSearch = searchTerm.toLowerCase();
+        return teams.filter(team => team.name.toLowerCase().includes(lowerSearch));
+    }, [teams, searchTerm]);
 
     const handleImport = async (team: StrapiTeam) => {
         setImportingInfo(team.name);
@@ -132,15 +141,30 @@ export function ImportTeamModal({ open, onOpenChange }: ImportTeamModalProps) {
                             <Button variant="outline" onClick={loadTeams}>Retry</Button>
                         </div>
                     ) : (
-                        <div className="flex-1 overflow-y-auto pr-2">
-                            <div className="grid grid-cols-2 gap-4 p-1 sm:grid-cols-3">
-                                {teams.map(team => (
-                                    <button
-                                        key={team.id}
-                                        className="relative flex flex-col items-center gap-3 rounded-lg border p-4 hover:bg-muted/50 transition-colors text-center disabled:opacity-50 group"
-                                        onClick={() => handleImport(team)}
-                                        disabled={importingInfo !== null}
-                                    >
+                        <div className="flex-1 flex flex-col min-h-0">
+                            <div className="pb-4 shrink-0">
+                                <Input
+                                    placeholder="Search teams..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full"
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="flex-1 overflow-y-auto pr-2">
+                                <div className="grid grid-cols-2 gap-4 p-1 sm:grid-cols-3">
+                                    {filteredTeams.length === 0 ? (
+                                        <div className="col-span-full py-8 text-center text-muted-foreground">
+                                            No teams found matching "{searchTerm}"
+                                        </div>
+                                    ) : (
+                                        filteredTeams.map(team => (
+                                            <button
+                                                key={team.id}
+                                                className="relative flex flex-col items-center gap-3 rounded-lg border p-4 hover:bg-muted/50 transition-colors text-center disabled:opacity-50 group"
+                                                onClick={() => handleImport(team)}
+                                                disabled={importingInfo !== null}
+                                            >
                                         <div className="h-16 w-16 overflow-hidden rounded-full bg-muted shadow-sm group-hover:scale-105 transition-transform">
                                             {team.crestUrl ? (
                                                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -156,7 +180,9 @@ export function ImportTeamModal({ open, onOpenChange }: ImportTeamModalProps) {
                                             </div>
                                         )}
                                     </button>
-                                ))}
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
