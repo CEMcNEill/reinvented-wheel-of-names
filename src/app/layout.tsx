@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { PostHogProvider } from "./providers/posthog-provider";
 
@@ -11,6 +12,11 @@ const outfit = Outfit({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const highlanderFont = localFont({
+  src: "../../public/Highlander.ttf",
+  variable: "--font-highlander",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.variable} ${inter.variable} antialiased font-sans`}
+        className={`${outfit.variable} ${inter.variable} ${highlanderFont.variable} antialiased font-sans`}
       >
         <PostHogProvider>{children}</PostHogProvider>
       </body>

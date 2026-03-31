@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { motion, useAnimation } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { useWheelSegments } from '../hooks';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
-import { usePostHog } from 'posthog-js/react';
 import { Flame } from 'lucide-react';
 
 const COLORS = [
@@ -26,11 +26,18 @@ const DEATH_COLORS = [
     '#000000', // Black
 ];
 
+const HIGHLANDER_COLORS = [
+    '#0f172a', // Slate 900 (Dark)
+    '#1e293b', // Slate 800 (Sword Metal)
+    '#334155', // Slate 700
+    '#1e3a8a', // Blue 900 (Deep)
+    '#1d4ed8', // Blue 700 (Electric)
+    '#3b82f6', // Blue 500 (Lightning)
+];
+
 export function WheelCanvas() {
     const { segments } = useWheelSegments();
-    const { isSpinning, setIsSpinning, winner, setWinner, spinRequest, resetSpinRequest, helpOpen } = useAppStore();
-    const posthog = usePostHog();
-    const isDeathMode = posthog.isFeatureEnabled('death_mode');
+    const { isSpinning, setIsSpinning, winner, setWinner, spinRequest, resetSpinRequest, helpOpen, isHighlanderMode, removeActiveSegment, resetHighlander, isDeathMode } = useAppStore();
     const controls = useAnimation();
     const [rotation, setRotation] = useState(0);
 
@@ -74,8 +81,11 @@ export function WheelCanvas() {
         const winner = segments[winningIndex];
         if (winner) {
             setWinner(winner.text);
+            if (isHighlanderMode) {
+                removeActiveSegment(winner.id, winner.text);
+            }
         }
-    }, [isSpinning, segments, rotation, controls, setIsSpinning, setWinner, helpOpen]);
+    }, [isSpinning, segments, rotation, controls, setIsSpinning, setWinner, helpOpen, isHighlanderMode, removeActiveSegment]);
 
     // Listen for external spin requests
     useEffect(() => {
@@ -108,6 +118,54 @@ export function WheelCanvas() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [spinWheel, winner, helpOpen]);
 
+    const showHighlanderVictory = isHighlanderMode && segments.length === 1;
+
+    // Highlander victory confetti
+    useEffect(() => {
+        if (showHighlanderVictory) {
+            const duration = 3000;
+            const end = Date.now() + duration;
+            // Highlander colors: Blue lightning, silver, white unless Death Mode is active
+            const colors = isDeathMode 
+                ? ['#dc2626', '#b91c1c', '#991b1b', '#7f1d1d', '#000000', '#450a0a']
+                : ['#3b82f6', '#1d4ed8', '#93c5fd', '#ffffff', '#94a3b8'];
+
+            const frame = () => {
+                const now = Date.now();
+                const angle = 42.5 + 17.5 * Math.sin(now * 0.005);
+                
+                const config: confetti.Options = {
+                    particleCount: 8,
+                    angle: angle,
+                    spread: 60,
+                    origin: { x: 0 },
+                    colors: colors,
+                };
+
+                // Apply death mode specific physics/shapes
+                if (isDeathMode) {
+                    config.shapes = ['circle'];
+                    config.gravity = 2.5; // Heavier, like liquid
+                    config.scalar = 1.2;
+                    config.drift = 0;
+                    config.ticks = 400; // Last longer
+                }
+
+                confetti({ ...config });
+                confetti({
+                    ...config,
+                    angle: 180 - angle,
+                    origin: { x: 1 },
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            };
+            frame();
+        }
+    }, [showHighlanderVictory]);
+
     if (segments.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
@@ -117,12 +175,21 @@ export function WheelCanvas() {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center gap-8 py-8">
-            <div className="relative w-full max-w-[400px] aspect-square">
-                {/* Pointer - positioned at right (3 o'clock), pointing left (inward) */}
-                <div className="absolute top-1/2 -right-4 w-0 h-0 border-y-[15px] border-y-transparent border-r-[30px] border-r-foreground -translate-y-1/2 z-10 drop-shadow-lg" />
+        <div className="flex flex-col items-center justify-center gap-8 py-8 w-full">
+            {showHighlanderVictory && (
+                <div className={`text-4xl font-bold animate-pulse font-[family-name:var(--font-highlander)] text-center leading-relaxed ${isDeathMode ? 'text-red-500 drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]' : 'text-blue-500 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]'}`}>
+                    THERE CAN BE ONLY ONE!<br/>
+                    <span className={`text-white text-5xl underline underline-offset-8 ${isDeathMode ? 'decoration-red-500' : 'decoration-blue-500'}`}>{segments[0].text}</span><br/>
+                    IS THE HIGHLANDER!
+                </div>
+            )}
+            
+            {!showHighlanderVictory && (
+                <div className="relative w-full max-w-[400px] aspect-square">
+                    {/* Pointer - positioned at right (3 o'clock), pointing left (inward) */}
+                    <div className="absolute top-1/2 -right-4 w-0 h-0 border-y-[15px] border-y-transparent border-r-[30px] border-r-foreground -translate-y-1/2 z-10 drop-shadow-lg" />
 
-                {/* Wheel */}
+                    {/* Wheel */}
                 <motion.div
                     className="w-full h-full rounded-full border-4 border-border overflow-hidden relative shadow-xl"
                     animate={controls}
@@ -145,10 +212,12 @@ export function WheelCanvas() {
                             const largeArcFlag = angle > 180 ? 1 : 0;
 
                             const pathData = `M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+                            
+                            const fillColors = isDeathMode ? DEATH_COLORS : (isHighlanderMode ? HIGHLANDER_COLORS : COLORS);
 
                             return (
                                 <g key={segment.id}>
-                                    <path d={pathData} fill={isDeathMode ? DEATH_COLORS[i % DEATH_COLORS.length] : COLORS[i % COLORS.length]} stroke="var(--background)" strokeWidth="0.5" />
+                                    <path d={pathData} fill={fillColors[i % fillColors.length]} stroke="var(--background)" strokeWidth="0.5" />
                                     {/* Text Label - simplified positioning */}
                                     <text
                                         x="50"
@@ -168,19 +237,30 @@ export function WheelCanvas() {
                     </svg>
                 </motion.div>
             </div>
+            )}
 
-            <Button
-                size="lg"
-                className={`text-xl px-12 py-8 rounded-full shadow-lg hover:scale-105 transition-transform ${isDeathMode ? 'bg-red-900 hover:bg-red-800 text-white border-2 border-red-500' : ''}`}
-                onClick={spinWheel}
-                disabled={isSpinning || segments.length < 2 || helpOpen}
-            >
-                {isSpinning ? 'Spinning...' : isDeathMode ? (
-                    <span className="flex items-center gap-2">
-                        SACRIFICE <Flame className="h-6 w-6 animate-pulse" />
-                    </span>
-                ) : 'SPIN!'}
-            </Button>
+            {showHighlanderVictory ? (
+                <Button
+                    size="lg"
+                    className={`text-xl px-12 py-8 rounded-full shadow-lg hover:scale-105 transition-transform ${isDeathMode ? 'bg-red-900 hover:bg-red-800 text-white border-2 border-red-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                    onClick={resetHighlander}
+                >
+                    RESET!
+                </Button>
+            ) : (
+                <Button
+                    size="lg"
+                    className={`text-xl px-12 py-8 rounded-full shadow-lg hover:scale-105 transition-transform ${isDeathMode ? 'bg-red-900 hover:bg-red-800 text-white border-2 border-red-500' : ''}`}
+                    onClick={spinWheel}
+                    disabled={isSpinning || segments.length < 2 || helpOpen}
+                >
+                    {isSpinning ? 'Spinning...' : isDeathMode ? (
+                        <span className="flex items-center gap-2">
+                            SACRIFICE <Flame className="h-6 w-6 animate-pulse" />
+                        </span>
+                    ) : 'SPIN!'}
+                </Button>
+            )}
         </div>
     );
 }

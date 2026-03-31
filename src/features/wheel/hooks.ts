@@ -10,7 +10,7 @@ export interface WheelSegment {
 }
 
 export function useWheelSegments() {
-    const { mode, activeTeamId, adHocNames, adHocTitle, excludedMemberIds } = useAppStore();
+    const { mode, activeTeamId, adHocNames, adHocTitle, excludedMemberIds, adHocExclusions } = useAppStore();
     const { team } = useTeam(activeTeamId);
 
     const segments: WheelSegment[] = useMemo(() => {
@@ -25,14 +25,17 @@ export function useWheelSegments() {
         }
 
         if (mode === 'adhoc') {
-            return adHocNames.map((name, i) => ({
-                id: `adhoc-${i}`,
-                text: name
-            }));
+            return adHocNames
+                .map((name, i) => ({
+                    id: `adhoc-${i}`,
+                    text: name,
+                    index: i // keep track of original index
+                }))
+                .filter(item => !adHocExclusions.includes(item.index));
         }
 
         return [];
-    }, [mode, team, adHocNames, excludedMemberIds]);
+    }, [mode, team, adHocNames, excludedMemberIds, adHocExclusions]);
 
     const title = mode === 'team' && team ? team.name : (adHocTitle || 'Wheel of Names');
 

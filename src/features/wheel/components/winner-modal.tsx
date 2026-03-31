@@ -12,10 +12,9 @@ import { cn } from '@/lib/utils';
 import styles from './winner-modal.module.css';
 
 export function WinnerModal() {
-    const { winner, setWinner, activeTeamId, mode } = useAppStore();
+    const { winner, setWinner, activeTeamId, mode, isHighlanderMode, isDeathMode } = useAppStore();
     const { teams } = useTeams();
     const posthog = usePostHog();
-    const isDeathMode = posthog.isFeatureEnabled('death_mode');
 
     const activeTeam = mode === 'team' && activeTeamId && teams
         ? teams.find(t => t.id === activeTeamId)
@@ -29,7 +28,7 @@ export function WinnerModal() {
     }, [setWinner]);
 
     useEffect(() => {
-        if (winner) {
+        if (winner && !isHighlanderMode) { // No confetti for eliminations
             // Default confetti colors
             let colors = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
 
@@ -62,9 +61,7 @@ export function WinnerModal() {
                     config.ticks = 400; // Last longer
                 }
 
-                confetti({
-                    ...config
-                });
+                confetti({ ...config });
 
                 confetti({
                     ...config,
@@ -79,7 +76,7 @@ export function WinnerModal() {
 
             frame();
         }
-    }, [winner, isDeathMode]);
+    }, [winner, isDeathMode, isHighlanderMode]);
 
     // Keyboard listener to close modal on Enter
     useEffect(() => {
@@ -101,6 +98,20 @@ export function WinnerModal() {
                 styles['winner-modal__content'],
                 isDeathMode && styles['winner-modal__content--death-mode']
             )}>
+                {isDeathMode && (
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="absolute top-1/2 left-1/2 min-w-full min-h-full object-cover -translate-x-1/2 -translate-y-1/2 opacity-60"
+                        >
+                            <source src="/fire-confetti.mp4" type="video/mp4" />
+                        </video>
+                        <div className="absolute inset-0 bg-black/40" />
+                    </div>
+                )}
 
                 {/* Content Container */}
                 <div className={styles['winner-modal__container']}>
@@ -114,9 +125,11 @@ export function WinnerModal() {
                     <div className={styles['winner-modal__title-group']}>
                         <h2 className={cn(
                             styles['winner-modal__title'],
-                            isDeathMode && styles['winner-modal__title--death-mode']
+                            isDeathMode && styles['winner-modal__title--death-mode'],
+                            isHighlanderMode && "font-[family-name:var(--font-highlander)] tracking-widest text-4xl sm:text-5xl",
+                            isHighlanderMode && (isDeathMode ? "text-red-500 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]" : "text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]")
                         )}>
-                            {isDeathMode ? 'THE CHOSEN ONE' : 'We have a winner!'}
+                            {isHighlanderMode ? 'ELIMINATED!' : isDeathMode ? 'THE CHOSEN ONE' : 'We have a winner!'}
                         </h2>
 
                         <div className={cn(
@@ -137,7 +150,8 @@ export function WinnerModal() {
                         <div className="flex flex-col items-center">
                             <p className={cn(
                                 styles['winner-modal__winner-name'],
-                                isDeathMode && styles['winner-modal__winner-name--death-mode']
+                                isDeathMode && styles['winner-modal__winner-name--death-mode'],
+                                isHighlanderMode && "font-[family-name:var(--font-highlander)] text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)] tracking-wide"
                             )}>
                                 {winner}
                             </p>
@@ -157,10 +171,12 @@ export function WinnerModal() {
                         onClick={handleClose}
                         className={cn(
                             styles['winner-modal__action'],
-                            isDeathMode && styles['winner-modal__action--death-mode']
+                            isDeathMode && styles['winner-modal__action--death-mode'],
+                            isHighlanderMode && !isDeathMode && "bg-blue-600 hover:bg-blue-700 text-white",
+                            isHighlanderMode && "font-[family-name:var(--font-highlander)] tracking-widest text-lg"
                         )}
                     >
-                        {isDeathMode ? 'Accept Fate' : 'Awesome!'}
+                        {isHighlanderMode ? 'There can be only one!' : isDeathMode ? 'Accept Fate' : 'Awesome!'}
                     </Button>
                 </div>
             </DialogContent>

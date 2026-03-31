@@ -46,4 +46,9 @@
     font-family: var(--font-sans);
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  /* Disable Turbopack/Next.js Error Overlay in the UI */
+  nextjs-portal {
+    display: none !important;
+  }
 }

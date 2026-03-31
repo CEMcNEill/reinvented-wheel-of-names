@@ -1,13 +1,14 @@
 'use client';
 
 import { usePostHog } from 'posthog-js/react';
+import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Skull } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export function DeathModeToggle() {
     const posthog = usePostHog();
-    const [isDeathMode, setIsDeathMode] = useState(false);
+    const { isDeathMode, setIsDeathMode } = useAppStore();
 
     useEffect(() => {
         // Check cookie for persistence on mount
@@ -26,25 +27,20 @@ export function DeathModeToggle() {
     }, [posthog]);
 
     useEffect(() => {
-        // Sync state with PostHog flag
-        const checkFlag = () => {
-            const flagValue = posthog.isFeatureEnabled('death_mode');
-            setIsDeathMode(!!flagValue);
+        // Sync body class with store state
+        if (isDeathMode) {
+            document.body.classList.add('death_mode');
+        } else {
+            document.body.classList.remove('death_mode');
+        }
 
-            // Update body class
-            if (flagValue) {
-                document.body.classList.add('death_mode');
-            } else {
-                document.body.classList.remove('death_mode');
+        // Sync PostHog feature flag
+        posthog.featureFlags.overrideFeatureFlags({
+            flags: {
+                'death_mode': isDeathMode
             }
-        };
-
-        checkFlag();
-        // Listen for flag changes if needed, but for now we rely on the manual toggle
-        // and re-checking. PostHog's onFeatureFlags is useful here.
-        const unregister = posthog.onFeatureFlags(checkFlag);
-        return () => unregister();
-    }, [posthog]);
+        });
+    }, [isDeathMode, posthog]);
 
     const toggleDeathMode = () => {
         const newValue = !isDeathMode;
@@ -52,26 +48,6 @@ export function DeathModeToggle() {
 
         // Save to cookie for persistence (1 year)
         document.cookie = `death_mode=${newValue}; path=/; max-age=31536000`;
-
-        // Read other cookies to preserve their state
-        const cookies = document.cookie.split('; ');
-        const remoteTeamsCookie = cookies.find(row => row.startsWith('enable_remote_teams='));
-        const remoteTeamsEnabled = remoteTeamsCookie ? remoteTeamsCookie.split('=')[1] === 'true' : false;
-
-        // Override the feature flag locally, preserving other flags
-        posthog.featureFlags.overrideFeatureFlags({
-            flags: {
-                'death_mode': newValue,
-                'enable_remote_teams': remoteTeamsEnabled
-            }
-        });
-
-        // Immediate UI feedback
-        if (newValue) {
-            document.body.classList.add('death_mode');
-        } else {
-            document.body.classList.remove('death_mode');
-        }
     };
 
     return (

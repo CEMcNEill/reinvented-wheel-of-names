@@ -12,6 +12,9 @@ A modern, feature-rich, and aesthetically pleasing random name picker applicatio
     -   **Integrations**: Import teams directly from your **Strapi / PostHog** employee directory.
     -   **Persistent Exclusions**: Temporarily exclude members from the wheel (e.g., if they are absent) without removing them from the team. **Exclusions are saved per-team** and persist across sessions.
 -   **📝 Ad-Hoc Lists**: A "Quick List" mode for temporary, on-the-fly name picking.
+-   **🎭 Special Modes**:
+    *   **⚔️ Highlander Mode**: Elimination mode—there can be only one!
+    *   **💀 Death Mode**: High-stakes mode with fire and dark aesthetics.
 -   **⚙️ Admin Panel**:
     -   **Backup & Restore**: Export your full database to JSON and restore it on any device.
     -   **Feature Flags**: Toggle experimental features like "Remote Teams" syncing.
