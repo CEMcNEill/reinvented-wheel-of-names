@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { PostHog } from "posthog-node";
+
+const posthogClient = process.env.NEXT_PUBLIC_POSTHOG_KEY 
+  ? new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, { host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com' })
+  : null;
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
@@ -69,13 +74,27 @@ export async function POST(request: NextRequest) {
 
       // To properly tag people in Slack, you must use their Slack Member ID (e.g., U12345678)
       // You can find this by clicking their profile in Slack -> More -> "Copy member ID"
-      const candidates = [
+      let candidates = [
         { name: "Chris McNeill", id: "U08M4JE1U3T" },
         { name: "Seb", id: "U0755L67BGF" },
         { name: "Tomas", id: "U09FJ7VUL5V" },
         { name: "Alex", id: "U08KA3CAVHR" },
         { name: "Seanosh", id: "U0895H8GMPZ" }
       ];
+
+      try {
+        if (posthogClient) {
+          const isEnabled = await posthogClient.isFeatureEnabled("wheel_tsnb_team", "slack-bot-uuid");
+          if (isEnabled) {
+            const payload = await posthogClient.getFeatureFlagPayload("wheel_tsnb_team", "slack-bot-uuid");
+            if (payload && Array.isArray(payload) && payload.length > 0) {
+              candidates = payload;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch posthog team payload:", err);
+      }
 
       const winnerIndex = Math.floor(Math.random() * candidates.length);
       const winner = candidates[winnerIndex];
