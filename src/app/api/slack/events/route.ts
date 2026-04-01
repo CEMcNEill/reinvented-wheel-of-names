@@ -20,7 +20,11 @@ export async function POST(request: NextRequest) {
   const slackTimestamp = request.headers.get("x-slack-request-timestamp");
   const signingSecret = process.env.SLACK_SIGNING_SECRET;
 
-  if (signingSecret && slackSignature && slackTimestamp) {
+  if (signingSecret) {
+    if (!slackSignature || !slackTimestamp) {
+        return new NextResponse("Missing signature headers", { status: 401 });
+    }
+
     const timestamp = parseInt(slackTimestamp, 10);
     const now = Math.floor(Date.now() / 1000);
     
@@ -49,7 +53,7 @@ export async function POST(request: NextRequest) {
     } catch (err) {
       return new NextResponse("Error verifying signature", { status: 500 });
     }
-  } else if (process.env.NODE_ENV === "production" && !signingSecret) {
+  } else if (process.env.NODE_ENV === "production") {
       console.warn("SLACK_SIGNING_SECRET is missing. Proceeding without validation.");
   }
 
@@ -63,14 +67,32 @@ export async function POST(request: NextRequest) {
       const channelId = event.item.channel;
       const raterId = event.user; // User who added the reaction
 
-      const names = ["@Chris McNeill", "@Seb", "@Tomas", "@Alex", "@Seanosh"];
-      const winnerIndex = Math.floor(Math.random() * names.length);
-      const winner = names[winnerIndex];
+      // To properly tag people in Slack, you must use their Slack Member ID (e.g., U12345678)
+      // You can find this by clicking their profile in Slack -> More -> "Copy member ID"
+      const candidates = [
+        { name: "Chris McNeill", id: "U_REPLACE_CHRIS" },
+        { name: "Seb", id: "U_REPLACE_SEB" },
+        { name: "Tomas", id: "U_REPLACE_TOMAS" },
+        { name: "Alex", id: "U_REPLACE_ALEX" },
+        { name: "Seanosh", id: "U_REPLACE_SEANOSH" }
+      ];
+
+      const winnerIndex = Math.floor(Math.random() * candidates.length);
+      const winner = candidates[winnerIndex];
+
+      const formatUser = (user: {name: string, id: string}) => 
+        user.id.startsWith("U_REPLACE") ? user.name : `<@${user.id}>`;
+
+      const namesDisplay = candidates.map(formatUser).join(", ");
+      const winnerDisplay = formatUser(winner);
 
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://reinvented-won.vercel.app";
 
       const messageContent = {
         channel: channelId,
+        thread_ts: event.item?.ts, // Posts as a reply to the reacted message, preserving context
+        unfurl_links: false, // Removes the large URL preview card for the vercel link
+        unfurl_media: false,
         text: `<@${raterId}> spun the wheel!`,
         blocks: [
           {
@@ -84,14 +106,14 @@ export async function POST(request: NextRequest) {
             type: "section",
             text: {
                type: "mrkdwn",
-               text: `*Candidates:* ${names.join(", ")}`
+               text: `*Candidates:* ${namesDisplay}`
             }
           },
           {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: `🎉 *Winner: ${winner}* 🎉`
+              text: `🎉 *Winner: ${winnerDisplay}* 🎉`
             }
           },
           {
