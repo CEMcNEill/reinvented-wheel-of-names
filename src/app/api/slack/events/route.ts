@@ -111,16 +111,25 @@ export async function POST(request: NextRequest) {
       if (slackBotToken) {
         // Send message to Slack asynchronously to not hold up the HTTP response
         // Slack requires a 200 OK within 3 seconds, otherwise it retries.
-        fetch("https://slack.com/api/chat.postMessage", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "Authorization": `Bearer ${slackBotToken}`
-          },
-          body: JSON.stringify(messageContent)
-        }).catch(err => {
+        try {
+          const response = await fetch("https://slack.com/api/chat.postMessage", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              "Authorization": `Bearer ${slackBotToken}`
+            },
+            body: JSON.stringify(messageContent)
+          });
+          
+          const result = await response.json();
+          if (!result.ok) {
+            console.error("Slack API error:", result.error);
+          } else {
+            console.log("Successfully posted to Slack");
+          }
+        } catch (err) {
           console.error("Failed to post message to Slack", err);
-        });
+        }
       } else {
         console.warn("SLACK_BOT_TOKEN is missing. Cannot post message to Slack.");
       }
