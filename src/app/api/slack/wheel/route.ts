@@ -56,10 +56,14 @@ export async function POST(request: NextRequest) {
   const textCleaned = textRaw.replace(/^spin\s+/i, "").trim();
   
   // Split on commas, remove whitespace around names, and filter out empties
-  const names = textCleaned
+  let names = textCleaned
     .split(",")
     .map((name) => name.trim())
     .filter((name) => name.length > 0);
+
+  if (textCleaned.toLowerCase() === "tsnb") {
+    names = ["@Chris McNeill", "@Seb", "@Tomas", "@Alex", "@Seanosh"];
+  }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://reinvented-won.vercel.app";
 
