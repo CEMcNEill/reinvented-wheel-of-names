@@ -22,12 +22,12 @@ export async function POST(request: NextRequest) {
 
   if (signingSecret) {
     if (!slackSignature || !slackTimestamp) {
-        return new NextResponse("Missing signature headers", { status: 401 });
+      return new NextResponse("Missing signature headers", { status: 401 });
     }
 
     const timestamp = parseInt(slackTimestamp, 10);
     const now = Math.floor(Date.now() / 1000);
-    
+
     // Reject requests older than 5 minutes (300 seconds)
     if (Math.abs(now - timestamp) > 300) {
       return new NextResponse("Request too old", { status: 400 });
@@ -42,9 +42,9 @@ export async function POST(request: NextRequest) {
     try {
       const mySigBuffer = Buffer.from(mySignature, "utf8");
       const slackSigBuffer = Buffer.from(slackSignature, "utf8");
-      
+
       if (mySigBuffer.length !== slackSigBuffer.length) {
-         return new NextResponse("Invalid signature length", { status: 401 });
+        return new NextResponse("Invalid signature length", { status: 401 });
       }
 
       if (!crypto.timingSafeEqual(mySigBuffer, slackSigBuffer)) {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       return new NextResponse("Error verifying signature", { status: 500 });
     }
   } else if (process.env.NODE_ENV === "production") {
-      console.warn("SLACK_SIGNING_SECRET is missing. Proceeding without validation.");
+    console.warn("SLACK_SIGNING_SECRET is missing. Proceeding without validation.");
   }
 
   // 3. Process the Event
@@ -70,17 +70,17 @@ export async function POST(request: NextRequest) {
       // To properly tag people in Slack, you must use their Slack Member ID (e.g., U12345678)
       // You can find this by clicking their profile in Slack -> More -> "Copy member ID"
       const candidates = [
-        { name: "Chris McNeill", id: "U_REPLACE_CHRIS" },
-        { name: "Seb", id: "U_REPLACE_SEB" },
-        { name: "Tomas", id: "U_REPLACE_TOMAS" },
-        { name: "Alex", id: "U_REPLACE_ALEX" },
-        { name: "Seanosh", id: "U_REPLACE_SEANOSH" }
+        { name: "Chris McNeill", id: "U08M4JE1U3T" },
+        { name: "Seb", id: "U0755L67BGF" },
+        { name: "Tomas", id: "U09FJ7VUL5V" },
+        { name: "Alex", id: "U08KA3CAVHR" },
+        { name: "Seanosh", id: "U0895H8GMPZ" }
       ];
 
       const winnerIndex = Math.floor(Math.random() * candidates.length);
       const winner = candidates[winnerIndex];
 
-      const formatUser = (user: {name: string, id: string}) => 
+      const formatUser = (user: { name: string, id: string }) =>
         user.id.startsWith("U_REPLACE") ? user.name : `<@${user.id}>`;
 
       const namesDisplay = candidates.map(formatUser).join(", ");
@@ -98,15 +98,15 @@ export async function POST(request: NextRequest) {
           {
             type: "section",
             text: {
-               type: "mrkdwn",
-               text: `🎡 *<@${raterId}>* spun the wheel via reaction!`
+              type: "mrkdwn",
+              text: `🎡 *<@${raterId}>* spun the wheel via reaction!`
             }
           },
           {
             type: "section",
             text: {
-               type: "mrkdwn",
-               text: `*Candidates:* ${namesDisplay}`
+              type: "mrkdwn",
+              text: `*Candidates:* ${namesDisplay}`
             }
           },
           {
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
             },
             body: JSON.stringify(messageContent)
           });
-          
+
           const result = await response.json();
           if (!result.ok) {
             console.error("Slack API error:", result.error);
