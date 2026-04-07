@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   if (signingSecret && slackSignature && slackTimestamp) {
     const timestamp = parseInt(slackTimestamp, 10);
     const now = Math.floor(Date.now() / 1000);
-    
+
     // Reject requests older than 5 minutes (300 seconds)
     if (Math.abs(now - timestamp) > 300) {
       return new NextResponse("Request too old", { status: 400 });
@@ -28,9 +28,9 @@ export async function POST(request: NextRequest) {
       // Must pad buffers if they somehow got misaligned to prevent crash in timingSafeEqual
       const mySigBuffer = Buffer.from(mySignature, "utf8");
       const slackSigBuffer = Buffer.from(slackSignature, "utf8");
-      
+
       if (mySigBuffer.length !== slackSigBuffer.length) {
-         return new NextResponse("Invalid signature length", { status: 401 });
+        return new NextResponse("Invalid signature length", { status: 401 });
       }
 
       const isVerified = crypto.timingSafeEqual(
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
   // 3. Process text input
   // Strip optional "spin" keyword (case-insensitive) at the beginning
   const textCleaned = textRaw.replace(/^spin\s+/i, "").trim();
-  
+
   // Split on commas, remove whitespace around names, and filter out empties
   let names = textCleaned
     .split(",")
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     .filter((name) => name.length > 0);
 
   if (textCleaned.toLowerCase() === "tsnb") {
-    names = ["@Chris McNeill", "@Seb", "@Tomas", "@Alex", "@Seanosh"];
+    names = ["Chris McNeill", "Seb", "Tomas", "Alex", "Seanosh"];
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://reinvented-won.vercel.app";
