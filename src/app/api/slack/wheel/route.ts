@@ -123,6 +123,51 @@ export async function POST(request: NextRequest) {
         }
       },
       {
+        type: "divider"
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Leave a tip?*`
+        }
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "15%",
+              emoji: true
+            },
+            value: "tip_15",
+            action_id: "tip_15_action"
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "20%",
+              emoji: true
+            },
+            value: "tip_20",
+            action_id: "tip_20_action"
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "50%",
+              emoji: true
+            },
+            value: "tip_50",
+            action_id: "tip_50_action"
+          }
+        ]
+      },
+      {
         type: "context",
         elements: [
           {
