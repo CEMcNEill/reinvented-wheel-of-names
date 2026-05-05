@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { usePostHog } from 'posthog-js/react';
 import { useWheelSegments } from '../hooks';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,8 @@ const HIGHLANDER_COLORS = [
 
 export function WheelCanvas() {
     const { segments } = useWheelSegments();
-    const { isSpinning, setIsSpinning, winner, setWinner, spinRequest, resetSpinRequest, helpOpen, isHighlanderMode, removeActiveSegment, resetHighlander, isDeathMode } = useAppStore();
+    const { isSpinning, setIsSpinning, winner, setWinner, spinRequest, resetSpinRequest, helpOpen, isHighlanderMode, removeActiveSegment, resetHighlander, isDeathMode, mode, activeTeamId } = useAppStore();
+    const posthog = usePostHog();
     const controls = useAnimation();
     const [rotation, setRotation] = useState(0);
 
@@ -46,6 +48,14 @@ export function WheelCanvas() {
 
         setIsSpinning(true);
         setWinner(null);
+
+        posthog.capture('wheel_spun', {
+            team_id: mode === 'team' ? activeTeamId : null,
+            mode,
+            member_count: segments.length,
+            highlander_mode: isHighlanderMode,
+            death_mode: isDeathMode,
+        });
 
         // Calculate random spin
         const minSpins = 3;
@@ -85,7 +95,7 @@ export function WheelCanvas() {
                 removeActiveSegment(winner.id, winner.text);
             }
         }
-    }, [isSpinning, segments, rotation, controls, setIsSpinning, setWinner, helpOpen, isHighlanderMode, removeActiveSegment]);
+    }, [isSpinning, segments, rotation, controls, setIsSpinning, setWinner, helpOpen, isHighlanderMode, removeActiveSegment, isDeathMode, mode, activeTeamId, posthog]);
 
     // Listen for external spin requests
     useEffect(() => {
