@@ -28,6 +28,18 @@ export function WinnerModal() {
     }, [setWinner]);
 
     useEffect(() => {
+        if (winner) {
+            posthog.capture('winner_selected', {
+                team_id: mode === 'team' ? activeTeamId : null,
+                mode,
+                winner_name: winner,
+                highlander_mode: isHighlanderMode,
+                death_mode: isDeathMode,
+            });
+        }
+    }, [winner, mode, activeTeamId, isHighlanderMode, isDeathMode, posthog]);
+
+    useEffect(() => {
         if (winner && !isHighlanderMode) { // No confetti for eliminations
             // Default confetti colors
             let colors = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];

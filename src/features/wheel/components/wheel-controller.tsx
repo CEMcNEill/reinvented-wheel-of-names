@@ -48,11 +48,27 @@ export function WheelController() {
     }), [teams, adHocOrder]);
 
     const handleSelectTeam = (team: Team) => {
+        if (mode !== 'team' || activeTeamId !== team.id) {
+            if (mode !== 'team') {
+                posthog.capture('mode_changed', {
+                    from_mode: mode,
+                    to_mode: 'team',
+                    team_id: team.id,
+                });
+            }
+        }
         setActiveTeamId(team.id);
         setMode('team');
     };
 
     const handleSelectAdHoc = () => {
+        if (mode !== 'adhoc') {
+            posthog.capture('mode_changed', {
+                from_mode: mode,
+                to_mode: 'adhoc',
+                team_id: null,
+            });
+        }
         setMode('adhoc');
         setActiveTeamId(null);
     };
@@ -93,14 +109,28 @@ export function WheelController() {
         if (nextIndex !== -1 && nextIndex !== currentIndex) {
             const nextItem = items[nextIndex];
             if (nextItem.type === 'adhoc') {
+                if (mode !== 'adhoc') {
+                    posthog.capture('mode_changed', {
+                        from_mode: mode,
+                        to_mode: 'adhoc',
+                        team_id: null,
+                    });
+                }
                 setMode('adhoc');
                 setActiveTeamId(null);
             } else {
+                if (mode !== 'team') {
+                    posthog.capture('mode_changed', {
+                        from_mode: mode,
+                        to_mode: 'team',
+                        team_id: nextItem.id,
+                    });
+                }
                 setMode('team');
                 setActiveTeamId(nextItem.id);
             }
         }
-    }, [mode, activeTeamId, items, setMode, setActiveTeamId]);
+    }, [mode, activeTeamId, items, setMode, setActiveTeamId, posthog]);
 
     // Keyboard shortcuts
     useEffect(() => {
@@ -148,6 +178,11 @@ export function WheelController() {
     const handleDelete = async (team: Team) => {
         if (confirm(`Are you sure you want to delete ${team.name}?`)) {
             await deleteTeam(team.id);
+            posthog.capture('team_deleted', {
+                team_id: team.id,
+                team_name: team.name,
+                member_count: team.members.length,
+            });
             if (activeTeamId === team.id) {
                 setActiveTeamId(null);
                 setMode('adhoc');
@@ -156,9 +191,6 @@ export function WheelController() {
     };
 
     const handleSubmit = async (data: CreateTeamInput) => {
-        // Analytics: Track team interaction
-
-
         if (editingTeam) {
             const membersWithIds = data.members.map(m => ({
                 id: uuidv4(),
