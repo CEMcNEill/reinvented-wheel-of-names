@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import { usePostHog } from 'posthog-js/react';
+import { useTour } from '@/features/tour/use-tour';
 
 interface HelpModalProps {
     open: boolean;
@@ -12,6 +13,13 @@ interface HelpModalProps {
 export function HelpModal({ open, onOpenChange }: HelpModalProps) {
     const posthog = usePostHog();
     const isDeathMode = posthog.isFeatureEnabled('death_mode');
+    const { startTour } = useTour();
+
+    const handleTakeTour = () => {
+        onOpenChange(false);
+        // Allow the modal close animation to finish so anchors are visible/unblocked.
+        setTimeout(() => startTour({ source: 'manual' }), 150);
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -43,7 +51,10 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
                         </a>.
                     </p>
                 </div>
-                <div className="mt-6 flex justify-end">
+                <div className="mt-6 flex justify-end gap-2">
+                    <Button variant="outline" onClick={handleTakeTour}>
+                        Take the tour
+                    </Button>
                     <Button variant="ghost" onClick={() => onOpenChange(false)}>
                         Close
                     </Button>

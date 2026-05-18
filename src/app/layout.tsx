@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import "driver.js/dist/driver.css";
 import { PostHogProvider } from "./providers/posthog-provider";
 
 const outfit = Outfit({

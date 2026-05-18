@@ -259,6 +259,7 @@ export function WheelCanvas() {
                 </Button>
             ) : (
                 <Button
+                    data-tour-id="spin-button"
                     size="lg"
                     className={`text-xl px-12 py-8 rounded-full shadow-lg hover:scale-105 transition-transform ${isDeathMode ? 'bg-red-900 hover:bg-red-800 text-white border-2 border-red-500' : ''}`}
                     onClick={spinWheel}

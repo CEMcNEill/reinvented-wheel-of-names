@@ -32,7 +32,7 @@ export function SortableAdHocItem({ isActive, onSelect, onNavigateUp, onNavigate
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} data-tour-id="adhoc-input">
             <div onClick={onSelect} className={styles['sortable-adhoc-item']}>
                 <div className={cn(
                     styles['sortable-adhoc-item__content'],
