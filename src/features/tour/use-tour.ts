@@ -3,47 +3,62 @@
 import { useCallback, useRef } from 'react';
 import { driver, type Driver, type DriveStep } from 'driver.js';
 import { usePostHog } from 'posthog-js/react';
-import { TOUR_STEPS, TOUR_COMPLETED_KEY } from './tour-steps';
+import { type Tour, tourCompletedKey } from './tour-steps';
 
 export type TourSource = 'auto' | 'manual';
 
 interface StartTourOptions {
+    tour: Tour;
     source: TourSource;
+}
+
+interface HasCompletedOptions {
+    tour: Tour;
 }
 
 interface UseTourReturn {
     startTour: (options: StartTourOptions) => void;
-    hasCompletedTour: () => boolean;
+    hasCompletedTour: (options: HasCompletedOptions) => boolean;
 }
 
 export function useTour(): UseTourReturn {
     const posthog = usePostHog();
     const driverRef = useRef<Driver | null>(null);
+    const tourRef = useRef<Tour | null>(null);
     const sourceRef = useRef<TourSource>('auto');
     const startedAtRef = useRef<number>(0);
     const skippedRef = useRef<boolean>(false);
     const lastStepIdRef = useRef<string>('');
 
-    const hasCompletedTour = useCallback(() => {
+    const hasCompletedTour = useCallback(({ tour }: HasCompletedOptions) => {
         if (typeof window === 'undefined') return true;
-        return window.localStorage.getItem(TOUR_COMPLETED_KEY) === '1';
+        return window.localStorage.getItem(tourCompletedKey(tour)) === '1';
     }, []);
 
-    const markCompleted = useCallback(() => {
+    const markCompleted = useCallback((tour: Tour) => {
         if (typeof window !== 'undefined') {
-            window.localStorage.setItem(TOUR_COMPLETED_KEY, '1');
+            window.localStorage.setItem(tourCompletedKey(tour), '1');
         }
     }, []);
 
-    const startTour = useCallback(({ source }: StartTourOptions) => {
+    const baseEventProps = (tour: Tour) => ({
+        tour_id: tour.id,
+        tour_name: tour.name,
+        tour_version: tour.version,
+        total_steps: tour.steps.length,
+        source: sourceRef.current,
+    });
+
+    const startTour = useCallback(({ tour, source }: StartTourOptions) => {
         if (driverRef.current?.isActive()) return;
 
+        tourRef.current = tour;
         sourceRef.current = source;
         startedAtRef.current = Date.now();
         skippedRef.current = false;
-        lastStepIdRef.current = TOUR_STEPS[0]?.id ?? '';
+        lastStepIdRef.current = tour.steps[0]?.id ?? '';
 
-        const steps: DriveStep[] = TOUR_STEPS.map((step) => ({
+        const steps: DriveStep[] = tour.steps.map((step) => ({
             element: step.selector,
             popover: {
                 title: step.title,
@@ -64,42 +79,51 @@ export function useTour(): UseTourReturn {
             prevBtnText: 'Back',
             doneBtnText: 'Done',
             steps,
-            onHighlightStarted: (_el, step, { driver: d }) => {
+            onHighlightStarted: (_el, _step, { driver: d }) => {
+                const activeTour = tourRef.current;
+                if (!activeTour) return;
                 const index = d.getActiveIndex() ?? 0;
-                const stepConfig = TOUR_STEPS[index];
+                const stepConfig = activeTour.steps[index];
                 if (!stepConfig) return;
                 lastStepIdRef.current = stepConfig.id;
                 posthog.capture('product_tour_step_viewed', {
+                    ...baseEventProps(activeTour),
                     step_id: stepConfig.id,
                     step_index: index,
-                    total_steps: TOUR_STEPS.length,
-                    source: sourceRef.current,
                 });
             },
             onCloseClick: (_el, _step, { driver: d }) => {
+                const activeTour = tourRef.current;
+                if (!activeTour) {
+                    d.destroy();
+                    return;
+                }
                 skippedRef.current = true;
                 const index = d.getActiveIndex() ?? 0;
-                const stepConfig = TOUR_STEPS[index];
+                const stepConfig = activeTour.steps[index];
                 posthog.capture('product_tour_skipped', {
+                    ...baseEventProps(activeTour),
                     step_id: stepConfig?.id ?? lastStepIdRef.current,
                     step_index: index,
-                    total_steps: TOUR_STEPS.length,
-                    source: sourceRef.current,
                 });
                 d.destroy();
             },
             onDestroyed: () => {
-                markCompleted();
+                const activeTour = tourRef.current;
+                if (!activeTour) return;
+                markCompleted(activeTour);
                 if (!skippedRef.current) {
                     const completedAt = new Date().toISOString();
                     posthog.capture('product_tour_completed', {
-                        source: sourceRef.current,
+                        ...baseEventProps(activeTour),
                         duration_ms: Date.now() - startedAtRef.current,
-                        total_steps: TOUR_STEPS.length,
                     });
                     posthog.setPersonProperties?.({
-                        product_tour_completed_at: completedAt,
-                        product_tour_completed_source: sourceRef.current,
+                        [`tour_${activeTour.id}_completed_at`]: completedAt,
+                        [`tour_${activeTour.id}_completed_source`]: sourceRef.current,
+                        [`tour_${activeTour.id}_completed_version`]: activeTour.version,
+                        last_tour_completed_id: activeTour.id,
+                        last_tour_completed_at: completedAt,
                     });
                 }
             },
@@ -107,10 +131,7 @@ export function useTour(): UseTourReturn {
 
         driverRef.current = instance;
 
-        posthog.capture('product_tour_started', {
-            source,
-            total_steps: TOUR_STEPS.length,
-        });
+        posthog.capture('product_tour_started', baseEventProps(tour));
 
         instance.drive();
     }, [posthog, markCompleted]);
