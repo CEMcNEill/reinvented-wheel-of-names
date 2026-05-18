@@ -9,6 +9,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Trophy, Skull, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PostSpinTip } from '@/features/tour/post-spin-tip';
 import styles from './winner-modal.module.css';
 
 export function WinnerModal() {
@@ -190,6 +191,9 @@ export function WinnerModal() {
                     >
                         {isHighlanderMode ? 'There can be only one!' : isDeathMode ? 'Accept Fate' : 'Awesome!'}
                     </Button>
+                    {winner && (
+                        <PostSpinTip isHighlanderMode={isHighlanderMode} isDeathMode={isDeathMode} />
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

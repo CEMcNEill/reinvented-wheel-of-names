@@ -13,6 +13,7 @@ import { HighlanderModeToggle } from '@/components/highlander-mode-toggle';
 import { usePostHog } from 'posthog-js/react';
 import { RemoteTeamsInitializer } from '@/features/teams/components/remote-teams-initializer';
 import { useWheelSegments } from '@/features/wheel/hooks';
+import { TourRunner } from '@/features/tour/tour-runner';
 
 export default function Home() {
   const { helpOpen, setHelpOpen, adminOpen, setAdminOpen, isHighlanderMode, isDeathMode } = useAppStore();
@@ -34,6 +35,7 @@ export default function Home() {
   return (
     <main className={`min-h-screen p-8 transition-colors duration-300 relative isolate ${isHighlanderMode && !isDeathMode ? 'bg-blue-950 text-blue-100' : ''} ${isHighlanderMode ? 'font-[family-name:var(--font-highlander)]' : ''}`}>
       <RemoteTeamsInitializer />
+      <TourRunner />
 
       {isDeathMode && (
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -59,19 +61,19 @@ export default function Home() {
 
         {/* Header */}
         <header className="flex justify-between items-center">
-          <h1 className={`text-5xl font-bold tracking-widest ${isHighlanderMode ? 'font-[family-name:var(--font-highlander)]' : 'font-heading'} ${isDeathMode ? 'text-gray-400 drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]' : (isHighlanderMode ? 'text-blue-300 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]' : '')}`}>
+          <h1 data-tour-id="app-title" className={`text-5xl font-bold tracking-widest ${isHighlanderMode ? 'font-[family-name:var(--font-highlander)]' : 'font-heading'} ${isDeathMode ? 'text-gray-400 drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]' : (isHighlanderMode ? 'text-blue-300 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]' : '')}`}>
             {isHighlanderMode ? (isDeathMode ? 'Highlander of Death' : 'Highlander Mode') : (isDeathMode ? 'Wheel of Death' : 'Wheel of Names')}
           </h1>
           <div className="flex items-center gap-2">
-            <HighlanderModeToggle />
-            <DeathModeToggle />
+            <div data-tour-id="highlander-toggle"><HighlanderModeToggle /></div>
+            <div data-tour-id="death-toggle"><DeathModeToggle /></div>
             {/* Settings button */}
-            <Button variant="ghost" size="icon" onClick={() => setAdminOpen(true)} title="Settings" className={isDeathMode ? 'text-gray-400 hover:text-gray-300' : ''}>
+            <Button data-tour-id="settings-button" variant="ghost" size="icon" onClick={() => setAdminOpen(true)} title="Settings" className={isDeathMode ? 'text-gray-400 hover:text-gray-300' : ''}>
               <span className="sr-only">Settings</span>
               <Settings className="h-5 w-5" />
             </Button>
             {/* Help button */}
-            <Button variant="ghost" size="icon" onClick={() => setHelpOpen(true)} title="Help" className={isDeathMode ? 'text-gray-400 hover:text-gray-300' : ''}>
+            <Button data-tour-id="help-button" variant="ghost" size="icon" onClick={() => setHelpOpen(true)} title="Help" className={isDeathMode ? 'text-gray-400 hover:text-gray-300' : ''}>
               <span className="sr-only">Help</span>
               <HelpCircle className="h-5 w-5" />
             </Button>
@@ -82,12 +84,12 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
           {/* Left Column: Wheel */}
-          <div className={`lg:col-span-7 rounded-[var(--radius)] p-8 flex items-center justify-center min-h-[400px] border-2 border-dashed backdrop-blur-sm ${isDeathMode ? 'bg-black/30 border-red-900 shadow-[0_0_30px_rgba(220,38,38,0.3)] z-10' : (isHighlanderMode ? 'bg-blue-900/30 border-blue-500/50 shadow-[0_0_30px_rgba(30,58,138,0.5)] z-10' : 'bg-muted/30 border-border')}`}>
+          <div data-tour-id="wheel-column" className={`lg:col-span-7 rounded-[var(--radius)] p-8 flex items-center justify-center min-h-[400px] border-2 border-dashed backdrop-blur-sm ${isDeathMode ? 'bg-black/30 border-red-900 shadow-[0_0_30px_rgba(220,38,38,0.3)] z-10' : (isHighlanderMode ? 'bg-blue-900/30 border-blue-500/50 shadow-[0_0_30px_rgba(30,58,138,0.5)] z-10' : 'bg-muted/30 border-border')}`}>
             <WheelCanvas />
           </div>
 
           {/* Right Column: Controls & Teams */}
-          <div className="lg:col-span-5">
+          <div data-tour-id="team-controller" className="lg:col-span-5">
             <WheelController />
           </div>
         </div>

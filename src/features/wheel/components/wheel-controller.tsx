@@ -265,7 +265,7 @@ export function WheelController() {
                 )}>
                     Choose a List
                 </h2>
-                <Button onClick={handleCreate} size="sm">
+                <Button data-tour-id="new-team-button" onClick={handleCreate} size="sm">
                     <Plus className="mr-2 h-4 w-4" />
                     New Team
                 </Button>
