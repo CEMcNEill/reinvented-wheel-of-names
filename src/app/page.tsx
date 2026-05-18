@@ -14,6 +14,7 @@ import { usePostHog } from 'posthog-js/react';
 import { RemoteTeamsInitializer } from '@/features/teams/components/remote-teams-initializer';
 import { useWheelSegments } from '@/features/wheel/hooks';
 import { TourRunner } from '@/features/tour/tour-runner';
+import { TourButton } from '@/features/tour/tour-button';
 
 export default function Home() {
   const { helpOpen, setHelpOpen, adminOpen, setAdminOpen, isHighlanderMode, isDeathMode } = useAppStore();
@@ -98,6 +99,7 @@ export default function Home() {
       {/* Modals */}
       <HelpModal open={helpOpen} onOpenChange={setHelpOpen} />
       <AdminModal open={adminOpen} onOpenChange={setAdminOpen} />
+      <TourButton />
     </main>
   );
 }
