@@ -14,9 +14,10 @@ import { usePostHog } from 'posthog-js/react';
 import { RemoteTeamsInitializer } from '@/features/teams/components/remote-teams-initializer';
 import { useWheelSegments } from '@/features/wheel/hooks';
 import { TourRunner } from '@/features/tour/tour-runner';
+import { FeatureCarousel } from '@/components/feature-carousel';
 
 export default function Home() {
-  const { helpOpen, setHelpOpen, adminOpen, setAdminOpen, isHighlanderMode, isDeathMode } = useAppStore();
+  const { helpOpen, setHelpOpen, adminOpen, setAdminOpen, isHighlanderMode, isDeathMode, carouselEnabled } = useAppStore();
   const { segments } = useWheelSegments();
   
   const showHighlanderVictory = isHighlanderMode && segments.length === 1;
@@ -79,6 +80,8 @@ export default function Home() {
             </Button>
           </div>
         </header>
+
+        {carouselEnabled && <FeatureCarousel />}
 
         {/* Main Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

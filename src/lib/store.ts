@@ -55,6 +55,10 @@ interface AppState {
     // Debug State
     verboseLogging: boolean;
     setVerboseLogging: (enabled: boolean) => void;
+
+    // Display
+    carouselEnabled: boolean;
+    setCarouselEnabled: (enabled: boolean) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -214,6 +218,10 @@ export const useAppStore = create<AppState>()(
             // Debug State
             verboseLogging: false,
             setVerboseLogging: (enabled) => set({ verboseLogging: enabled }),
+
+            // Display
+            carouselEnabled: true,
+            setCarouselEnabled: (enabled) => set({ carouselEnabled: enabled }),
         }),
         {
             name: 'wheel-of-names-storage',
@@ -226,7 +234,8 @@ export const useAppStore = create<AppState>()(
                 adHocOrder: state.adHocOrder,
                 isHighlanderMode: state.isHighlanderMode,
                 isDeathMode: state.isDeathMode,
-                verboseLogging: state.verboseLogging // Persist debug setting
+                verboseLogging: state.verboseLogging, // Persist debug setting
+                carouselEnabled: state.carouselEnabled,
             }), // Don't persist transient states like isSpinning
         }
     )
