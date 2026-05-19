@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useAppStore } from "@/lib/store";
-import { Database, Bug, Download, Upload, Globe, Cloud } from "lucide-react";
+import { Database, Bug, Download, Upload, Globe, Cloud, LayoutGrid } from "lucide-react";
 import { downloadBackup } from "../services/export-service";
 import { importData } from "../services/import-service";
 import { usePostHog } from 'posthog-js/react';
@@ -19,7 +19,7 @@ interface AdminModalProps {
 
 export function AdminModal({ open, onOpenChange }: AdminModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { verboseLogging, setVerboseLogging } = useAppStore();
+    const { verboseLogging, setVerboseLogging, carouselEnabled, setCarouselEnabled } = useAppStore();
     const posthog = usePostHog();
     const [remoteTeamsEnabled, setRemoteTeamsEnabled] = useState(false);
     const [importModalOpen, setImportModalOpen] = useState(false);
@@ -165,6 +165,21 @@ export function AdminModal({ open, onOpenChange }: AdminModalProps) {
                                     <p className={styles['admin-modal__card-desc']}>Enable syncing ephemeral teams from remote configuration.</p>
                                 </div>
                                 <Switch checked={remoteTeamsEnabled} onCheckedChange={handleToggleRemoteTeams} />
+                            </div>
+                        </div>
+
+                        {/* Display Section */}
+                        <div className={styles['admin-modal__section']}>
+                            <h3 className={styles['admin-modal__section-title']}>
+                                <LayoutGrid className="h-5 w-5" />
+                                Display
+                            </h3>
+                            <div className={cn(styles['admin-modal__card'], styles['admin-modal__card--row'])}>
+                                <div className={styles['admin-modal__card-header']}>
+                                    <h4 className={styles['admin-modal__card-title']}>Feature Carousel</h4>
+                                    <p className={styles['admin-modal__card-desc']}>Show the rotating feature highlights above the wheel.</p>
+                                </div>
+                                <Switch checked={carouselEnabled} onCheckedChange={setCarouselEnabled} />
                             </div>
                         </div>
 

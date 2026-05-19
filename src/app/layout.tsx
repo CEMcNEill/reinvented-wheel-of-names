@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "driver.js/dist/driver.css";
 import { PostHogProvider } from "./providers/posthog-provider";
+import { FeatureBanner } from "@/components/feature-banner";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -35,7 +36,10 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} ${inter.variable} ${highlanderFont.variable} antialiased font-sans`}
       >
-        <PostHogProvider>{children}</PostHogProvider>
+        <PostHogProvider>
+          <FeatureBanner />
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   );
