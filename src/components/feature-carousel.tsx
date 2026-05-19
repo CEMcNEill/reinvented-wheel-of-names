@@ -44,6 +44,15 @@ export function FeatureCarousel() {
         });
     }, [posthog]);
 
+    const handleSlideClick = useCallback((slideIndex: number) => {
+        const slide = SLIDES[slideIndex];
+        posthog.capture('feature_carousel_slide_clicked', {
+            slide_number: slideIndex + 1,
+            slide_id: slide.id,
+            total_slides: SLIDES.length,
+        });
+    }, [posthog]);
+
     useEffect(() => {
         const slide = SLIDES[0];
         posthog.capture('feature_carousel_slide_viewed', {
@@ -87,16 +96,22 @@ export function FeatureCarousel() {
                 >
                     <ChevronLeft className="h-5 w-5" />
                 </button>
-                <button
-                    type="button"
-                    onClick={() => goTo(index + 1, 'click')}
-                    aria-label="Next slide"
+                <div
                     aria-live="polite"
-                    className="flex-1 px-4 py-4 text-left focus:outline-none focus:ring-2 focus:ring-ring rounded-none"
+                    className="flex-1 px-4 py-4 flex items-center gap-4"
                 >
-                    <h3 className="font-heading text-lg font-semibold leading-tight">{slide.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{slide.body}</p>
-                </button>
+                    <div className="flex-1">
+                        <h3 className="font-heading text-lg font-semibold leading-tight">{slide.title}</h3>
+                        <p className="text-sm text-muted-foreground mt-1">{slide.body}</p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => handleSlideClick(index)}
+                        className="shrink-0 px-3 py-1.5 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                        Click me
+                    </button>
+                </div>
                 <button
                     type="button"
                     onClick={() => goTo(index + 1, 'click')}
