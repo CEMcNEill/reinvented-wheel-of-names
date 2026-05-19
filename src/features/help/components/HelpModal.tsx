@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 
 import { usePostHog } from 'posthog-js/react';
 import { useTour } from '@/features/tour/use-tour';
+import { MAIN_ONBOARDING_TOUR } from '@/features/tour/tour-steps';
 
 interface HelpModalProps {
     open: boolean;
@@ -18,7 +19,7 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
     const handleTakeTour = () => {
         onOpenChange(false);
         // Allow the modal close animation to finish so anchors are visible/unblocked.
-        setTimeout(() => startTour({ source: 'manual' }), 150);
+        setTimeout(() => startTour({ tour: MAIN_ONBOARDING_TOUR, source: 'manual' }), 150);
     };
 
     return (
