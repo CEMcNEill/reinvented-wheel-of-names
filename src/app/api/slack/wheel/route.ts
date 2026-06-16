@@ -226,13 +226,26 @@ export async function POST(request: NextRequest) {
   // Strip optional "spin" keyword (case-insensitive) at the beginning
   const textCleaned = textRaw.replace(/^spin\s+/i, "").trim();
 
+  // Split off an optional prize/assignment on the first " gets " keyword.
+  // Everything before is the name list; everything after is the prize (verbatim, may be a URL).
+  let nameText = textCleaned;
+  let prize: string | null = null;
+
+  const getsMatch = textCleaned.match(/\s+gets\s+/i);
+  if (getsMatch && getsMatch.index !== undefined) {
+    nameText = textCleaned.slice(0, getsMatch.index).trim();
+    const prizeRaw = textCleaned.slice(getsMatch.index + getsMatch[0].length).trim();
+    // Empty prize (trailing "gets" with nothing after) falls back to the normal full response.
+    prize = prizeRaw.length > 0 ? prizeRaw : null;
+  }
+
   // Split on commas, remove whitespace around names, and filter out empties
-  let names = textCleaned
+  let names = nameText
     .split(",")
     .map((name) => name.trim())
     .filter((name) => name.length > 0);
 
-  if (textCleaned.toLowerCase() === "tsnb") {
+  if (nameText.toLowerCase() === "tsnb") {
     names = ["Chris McNeill", "Seb", "Tomas", "Alex", "Seanosh"];
   }
 
@@ -242,13 +255,13 @@ export async function POST(request: NextRequest) {
   if (names.length < 2) {
     return NextResponse.json({
       response_type: "ephemeral",
-      text: "Need at least 2 names to spin the wheel! Example: `/wheel Alice, Bob, Charlie`",
+      text: "Need at least 2 names to spin the wheel! Example: `/wheel Alice, Bob, Charlie` or `/wheel Alice, Bob gets the deploy`",
       blocks: [
         {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: "Need at least 2 names to spin the wheel!\n*Usage:* `/wheel Alice, Bob, Charlie`"
+            text: "Need at least 2 names to spin the wheel!\n*Usage:* `/wheel Alice, Bob, Charlie`\n*Optional prize:* `/wheel Alice, Bob gets the deploy ticket` — brief result, winner gets the prize."
           }
         },
         {
@@ -267,6 +280,22 @@ export async function POST(request: NextRequest) {
   // 5. Pick a random winner
   const winnerIndex = Math.floor(Math.random() * names.length);
   const winner = names[winnerIndex];
+
+  // 5b. Brief response path: a prize/assignment was provided.
+  if (prize) {
+    const isUrl = /^https?:\/\/\S+$/i.test(prize);
+    const prizeText = isUrl ? `<${prize}|${prize}>` : prize;
+    return NextResponse.json({
+      response_type: "in_channel",
+      text: `🎉 Winner: ${winner} gets ${prize}`,
+      blocks: [
+        {
+          type: "section",
+          text: { type: "mrkdwn", text: `🎉 *Winner: ${winner}* gets ${prizeText}` }
+        }
+      ]
+    });
+  }
 
   // 6. Pick a random easter egg
   const egg = easterEggs[Math.floor(Math.random() * easterEggs.length)];
