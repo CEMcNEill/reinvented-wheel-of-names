@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: "Need at least 2 names to spin the wheel!\n*Usage:* `/wheel Alice, Bob, Charlie`\n*Optional prize:* `/wheel Alice, Bob gets the deploy ticket` — brief result, winner gets the prize.\n*Party mode:* `/wheel partymode Alice, Bob, Charlie` — no restraint whatsoever. :whoohoo-hdr:"
+            text: "Need at least 2 names to spin the wheel!\n*Usage:* `/wheel Alice, Bob, Charlie`\n*Optional prize:* `/wheel Alice, Bob gets the deploy ticket` — brief result, winner gets the prize.\n*Party mode:* `/wheel partymode Alice, Bob, Charlie` — no restraint whatsoever. :woohoo-hdr:"
           }
         },
         {
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
   // 5c. Party response path: every celebration at once, restraint nowhere.
   if (partyMode) {
     const confetti = shuffle([
-      ":hdr-smile:", ":beer-hdr:", ":whoohoo-hdr:", "🎉", "🎊", "🥳", "✨", "🕺", "🏆", "🥇"
+      ":hdr-smile:", ":beer-hdr:", ":woohoo-hdr:", "🎉", "🎊", "🥳", "✨", "🕺", "🏆", "🥇"
     ]);
     const banner = [...confetti, ...confetti].slice(0, 12).join(" ");
 
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `:whoohoo-hdr: 🏆 *WINNER: ${winner}* 🏆 :whoohoo-hdr:${prizeLine}`
+            text: `:woohoo-hdr: 🏆 *WINNER: ${winner}* 🏆 :woohoo-hdr:${prizeLine}`
           }
         },
         { type: "divider" },
