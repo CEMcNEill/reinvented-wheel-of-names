@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { easterEggs } from "./easter-eggs";
 
 export async function POST(request: NextRequest) {
   // 1. Read raw body and verify signature
@@ -49,20 +50,25 @@ export async function POST(request: NextRequest) {
   // 2. Parse form-encoded body
   const parsedBody = new URLSearchParams(rawBody);
   const textRaw = parsedBody.get("text") || "";
+  const userName = parsedBody.get("user_name") || "someone";
 
   // 3. Process text input
   // Strip optional "spin" keyword (case-insensitive) at the beginning
   const textCleaned = textRaw.replace(/^spin\s+/i, "").trim();
 
+  // Strip the chrismode keyword. It renames every candidate further down.
+  const chrisMode = /^chrismode\s+/i.test(textCleaned);
+  const textModed = textCleaned.replace(/^chrismode\s+/i, "").trim();
+
   // Split off an optional prize/assignment on the first " gets " keyword.
   // Everything before is the name list; everything after is the prize (verbatim, may be a URL).
-  let nameText = textCleaned;
+  let nameText = textModed;
   let prize: string | null = null;
 
-  const getsMatch = textCleaned.match(/\s+gets\s+/i);
+  const getsMatch = textModed.match(/\s+gets\s+/i);
   if (getsMatch && getsMatch.index !== undefined) {
-    nameText = textCleaned.slice(0, getsMatch.index).trim();
-    const prizeRaw = textCleaned.slice(getsMatch.index + getsMatch[0].length).trim();
+    nameText = textModed.slice(0, getsMatch.index).trim();
+    const prizeRaw = textModed.slice(getsMatch.index + getsMatch[0].length).trim();
     // Empty prize (trailing "gets" with nothing after) falls back to the normal full response.
     prize = prizeRaw.length > 0 ? prizeRaw : null;
   }
@@ -75,6 +81,10 @@ export async function POST(request: NextRequest) {
 
   if (nameText.toLowerCase() === "tsnb") {
     names = ["Chris McNeill", "Seb", "Tomas", "Alex", "Seanosh"];
+  }
+
+  if (chrisMode) {
+    names = names.map((_, index) => (index === 0 ? "Chris" : `Chris ${index + 1}`));
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://reinvented-won.vercel.app";
@@ -125,9 +135,19 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // 6. Return the winner name, nothing else
+  // 6. Return the winner with a random easter egg
+  const egg = easterEggs[Math.floor(Math.random() * easterEggs.length)];
+  const eggBlocks = egg({ winner, userName, names });
+
   return NextResponse.json({
     response_type: "in_channel",
-    text: winner,
+    text: `🎉 Winner: ${winner}`,
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: `🎉 *Winner: ${winner}* 🎉` }
+      },
+      ...eggBlocks
+    ]
   });
 }
