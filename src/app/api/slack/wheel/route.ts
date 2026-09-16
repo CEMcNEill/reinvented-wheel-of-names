@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { easterEggs } from "./easter-eggs";
+
+function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
 export async function POST(request: NextRequest) {
   // 1. Read raw body and verify signature
@@ -49,20 +59,40 @@ export async function POST(request: NextRequest) {
   // 2. Parse form-encoded body
   const parsedBody = new URLSearchParams(rawBody);
   const textRaw = parsedBody.get("text") || "";
+  const userName = parsedBody.get("user_name") || "someone";
 
   // 3. Process text input
   // Strip optional "spin" keyword (case-insensitive) at the beginning
   const textCleaned = textRaw.replace(/^spin\s+/i, "").trim();
 
+  // Strip the mode keywords. They can come in either order, before the names.
+  let textModed = textCleaned;
+  let chrisMode = false;
+  let partyMode = false;
+
+  for (let found = true; found; ) {
+    found = false;
+    if (/^chrismode\s+/i.test(textModed)) {
+      chrisMode = true;
+      textModed = textModed.replace(/^chrismode\s+/i, "").trim();
+      found = true;
+    }
+    if (/^partymode\s+/i.test(textModed)) {
+      partyMode = true;
+      textModed = textModed.replace(/^partymode\s+/i, "").trim();
+      found = true;
+    }
+  }
+
   // Split off an optional prize/assignment on the first " gets " keyword.
   // Everything before is the name list; everything after is the prize (verbatim, may be a URL).
-  let nameText = textCleaned;
+  let nameText = textModed;
   let prize: string | null = null;
 
-  const getsMatch = textCleaned.match(/\s+gets\s+/i);
+  const getsMatch = textModed.match(/\s+gets\s+/i);
   if (getsMatch && getsMatch.index !== undefined) {
-    nameText = textCleaned.slice(0, getsMatch.index).trim();
-    const prizeRaw = textCleaned.slice(getsMatch.index + getsMatch[0].length).trim();
+    nameText = textModed.slice(0, getsMatch.index).trim();
+    const prizeRaw = textModed.slice(getsMatch.index + getsMatch[0].length).trim();
     // Empty prize (trailing "gets" with nothing after) falls back to the normal full response.
     prize = prizeRaw.length > 0 ? prizeRaw : null;
   }
@@ -77,6 +107,10 @@ export async function POST(request: NextRequest) {
     names = ["Chris McNeill", "Seb", "Tomas", "Alex", "Seanosh"];
   }
 
+  if (chrisMode) {
+    names = names.map((_, index) => (index === 0 ? "Chris" : `Chris ${index + 1}`));
+  }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://reinvented-won.vercel.app";
 
   // 4. Handle edge cases (empty or single name)
@@ -89,7 +123,7 @@ export async function POST(request: NextRequest) {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: "Need at least 2 names to spin the wheel!\n*Usage:* `/wheel Alice, Bob, Charlie`\n*Optional prize:* `/wheel Alice, Bob gets the deploy ticket` — brief result, winner gets the prize."
+            text: "Need at least 2 names to spin the wheel!\n*Usage:* `/wheel Alice, Bob, Charlie`\n*Optional prize:* `/wheel Alice, Bob gets the deploy ticket` — brief result, winner gets the prize.\n*Party mode:* `/wheel partymode Alice, Bob, Charlie` — no restraint whatsoever. :whoohoo-hdr:"
           }
         },
         {
@@ -109,7 +143,68 @@ export async function POST(request: NextRequest) {
   const winnerIndex = Math.floor(Math.random() * names.length);
   const winner = names[winnerIndex];
 
-  // 5b. Brief response path: a prize/assignment was provided.
+  // 5b. Seb gets no celebration. Plain text, no blocks, no easter egg, whatever the mode.
+  if (winner.trim().toLowerCase() === "seb") {
+    return NextResponse.json({
+      response_type: "in_channel",
+      text: prize ? `${winner} gets ${prize}` : winner
+    });
+  }
+
+  // 5c. Party response path: every celebration at once, restraint nowhere.
+  if (partyMode) {
+    const confetti = shuffle([
+      ":hdr-smile:", ":beer-hdr:", ":whoohoo-hdr:", "🎉", "🎊", "🥳", "✨", "🕺", "🏆", "🥇"
+    ]);
+    const banner = [...confetti, ...confetti].slice(0, 12).join(" ");
+
+    // Three different easter eggs, because one is clearly not enough.
+    const partyEggs = shuffle(easterEggs)
+      .slice(0, 3)
+      .flatMap((partyEgg) => [
+        ...partyEgg({ winner, userName, names }),
+        { type: "divider" }
+      ]);
+
+    const prizeLine = prize ? `\n:beer-hdr: ...and *${winner}* gets *${prize}*!` : "";
+
+    return NextResponse.json({
+      response_type: "in_channel",
+      text: `🎉🎊 PARTY MODE — Winner: ${winner}${prize ? ` gets ${prize}` : ""}`,
+      blocks: [
+        { type: "header", text: { type: "plain_text", text: "🎉🎊 PARTY MODE 🎊🎉", emoji: true } },
+        { type: "section", text: { type: "mrkdwn", text: banner } },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `:hdr-smile: *@${userName}* spun the wheel for *${names.length}* brave souls: ${names.join(", ")}`
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `:whoohoo-hdr: 🏆 *WINNER: ${winner}* 🏆 :whoohoo-hdr:${prizeLine}`
+          }
+        },
+        { type: "divider" },
+        ...partyEggs,
+        { type: "section", text: { type: "mrkdwn", text: banner } },
+        {
+          type: "context",
+          elements: [
+            {
+              type: "mrkdwn",
+              text: `:beer-hdr: The wheel has left the building. <${appUrl}|Spin again, you animal> ✨`
+            }
+          ]
+        }
+      ]
+    });
+  }
+
+  // 5d. Brief response path: a prize/assignment was provided.
   if (prize) {
     const isUrl = /^https?:\/\/\S+$/i.test(prize);
     const prizeText = isUrl ? `<${prize}|${prize}>` : prize;
@@ -125,9 +220,19 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // 6. Return the winner name, nothing else
+  // 6. Return the winner with a random easter egg
+  const egg = easterEggs[Math.floor(Math.random() * easterEggs.length)];
+  const eggBlocks = egg({ winner, userName, names });
+
   return NextResponse.json({
     response_type: "in_channel",
-    text: winner,
+    text: `🎉 Winner: ${winner}`,
+    blocks: [
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: `🎉 *Winner: ${winner}* 🎉` }
+      },
+      ...eggBlocks
+    ]
   });
 }
