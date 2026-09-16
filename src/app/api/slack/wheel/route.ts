@@ -143,7 +143,15 @@ export async function POST(request: NextRequest) {
   const winnerIndex = Math.floor(Math.random() * names.length);
   const winner = names[winnerIndex];
 
-  // 5b. Party response path: every celebration at once, restraint nowhere.
+  // 5b. Seb gets no celebration. Plain text, no blocks, no easter egg, whatever the mode.
+  if (winner.trim().toLowerCase() === "seb") {
+    return NextResponse.json({
+      response_type: "in_channel",
+      text: prize ? `${winner} gets ${prize}` : winner
+    });
+  }
+
+  // 5c. Party response path: every celebration at once, restraint nowhere.
   if (partyMode) {
     const confetti = shuffle([
       ":hdr-smile:", ":beer-hdr:", ":whoohoo-hdr:", "🎉", "🎊", "🥳", "✨", "🕺", "🏆", "🥇"
@@ -196,7 +204,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // 5c. Brief response path: a prize/assignment was provided.
+  // 5d. Brief response path: a prize/assignment was provided.
   if (prize) {
     const isUrl = /^https?:\/\/\S+$/i.test(prize);
     const prizeText = isUrl ? `<${prize}|${prize}>` : prize;
